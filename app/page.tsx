@@ -1293,7 +1293,7 @@ export default function Home() {
               description="Perfect for side projects and learning"
               features={[
                 '1 permanent webhook URL',
-                '100 events / month',
+                '1,000 events / month',
                 '7-day event history',
                 'CLI localhost relay',
                 '3 mock workflows',
