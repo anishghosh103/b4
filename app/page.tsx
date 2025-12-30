@@ -1319,7 +1319,7 @@ export default function Home() {
       </section>
 
       {/* Testimonials */}
-      <section className="py-24 px-6 border-t border-border/50">
+      {/* <section className="py-24 px-6 border-t border-border/50">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
@@ -1348,7 +1348,7 @@ export default function Home() {
             />
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* CTA Footer */}
       <section
