@@ -1,79 +1,122 @@
-"use client";
+'use client';
 
-import { useState, useEffect, FormEvent } from "react";
+import { FormEvent, useEffect, useState } from 'react';
 
 // Waitlist form component
-function WaitlistForm({ variant = "default" }: { variant?: "default" | "large" }) {
-  const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
-  const [message, setMessage] = useState("");
+function WaitlistForm({
+  variant = 'default',
+}: {
+  variant?: 'default' | 'large';
+}) {
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState<
+    'idle' | 'loading' | 'success' | 'error'
+  >('idle');
+  const [message, setMessage] = useState('');
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!email) return;
 
-    setStatus("loading");
+    setStatus('loading');
     try {
-      const res = await fetch("/api/waitlist", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('/api/waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
       });
 
       const data = await res.json();
 
       if (res.ok) {
-        setStatus("success");
+        setStatus('success');
         setMessage(data.message);
-        setEmail("");
+        setEmail('');
       } else {
-        setStatus("error");
-        setMessage(data.error || "Something went wrong");
+        setStatus('error');
+        setMessage(data.error || 'Something went wrong');
       }
     } catch {
-      setStatus("error");
-      setMessage("Something went wrong. Please try again.");
+      setStatus('error');
+      setMessage('Something went wrong. Please try again.');
     }
   };
 
-  if (status === "success") {
+  if (status === 'success') {
     return (
-      <div className={`flex items-center gap-2 ${variant === "large" ? "px-6 py-4" : "px-4 py-3"} rounded-lg bg-emerald-500/10 border border-emerald-500/30`}>
-        <svg className="w-5 h-5 text-emerald-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+      <div
+        className={`flex items-center gap-2 ${
+          variant === 'large' ? 'px-6 py-4' : 'px-4 py-3'
+        } rounded-lg bg-emerald-500/10 border border-emerald-500/30`}
+      >
+        <svg
+          className="w-5 h-5 text-emerald-400 flex-shrink-0"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M5 13l4 4L19 7"
+          />
         </svg>
-        <span className={`text-emerald-400 ${variant === "large" ? "text-lg" : "text-sm"}`}>{message}</span>
+        <span
+          className={`text-emerald-400 ${
+            variant === 'large' ? 'text-lg' : 'text-sm'
+          }`}
+        >
+          {message}
+        </span>
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-col sm:flex-row gap-3"
+    >
       <input
         type="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         placeholder="Enter your email"
-        className={`flex-1 ${variant === "large" ? "px-6 py-4 text-lg" : "px-4 py-3"} rounded-lg bg-surface border border-border focus:border-accent/50 focus:outline-none text-foreground placeholder:text-muted transition-colors`}
-        disabled={status === "loading"}
+        className={`flex-1 ${
+          variant === 'large' ? 'px-6 py-4 text-lg' : 'px-4 py-3'
+        } rounded-lg bg-surface border border-border focus:border-accent/50 focus:outline-none text-foreground placeholder:text-muted transition-colors`}
+        disabled={status === 'loading'}
         required
       />
       <button
         type="submit"
-        disabled={status === "loading"}
-        className={`${variant === "large" ? "px-8 py-4 text-lg" : "px-6 py-3"} bg-accent text-background font-medium rounded-lg hover:bg-accent-dim transition-all duration-300 glow-amber-sm hover:glow-amber disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap`}
+        disabled={status === 'loading'}
+        className={`${
+          variant === 'large' ? 'px-8 py-4 text-lg' : 'px-6 py-3'
+        } bg-accent text-background font-medium rounded-lg hover:bg-accent-dim transition-all duration-300 glow-amber-sm hover:glow-amber disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap`}
       >
-        {status === "loading" ? "Joining..." : "Join Waitlist"}
+        {status === 'loading' ? 'Joining...' : 'Join Waitlist'}
       </button>
-      {status === "error" && (
-        <p className="text-red-400 text-sm mt-2 sm:absolute sm:mt-0 sm:top-full sm:left-0">{message}</p>
+      {status === 'error' && (
+        <p className="text-red-400 text-sm mt-2 sm:absolute sm:mt-0 sm:top-full sm:left-0">
+          {message}
+        </p>
       )}
     </form>
   );
 }
 
 // Animated webhook event for the hero
-function WebhookEvent({ delay, type, event }: { delay: number; type: string; event: string }) {
+function WebhookEvent({
+  delay,
+  type,
+  event,
+}: {
+  delay: number;
+  type: string;
+  event: string;
+}) {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -82,20 +125,22 @@ function WebhookEvent({ delay, type, event }: { delay: number; type: string; eve
   }, [delay]);
 
   const colors: Record<string, string> = {
-    stripe: "bg-violet-500",
-    docusign: "bg-yellow-500",
-    dodo: "bg-emerald-500",
-    github: "bg-zinc-400",
+    stripe: 'bg-violet-500',
+    docusign: 'bg-yellow-500',
+    dodo: 'bg-emerald-500',
+    github: 'bg-zinc-400',
   };
 
   return (
     <div
       className={`flex items-center gap-3 px-4 py-3 rounded-lg bg-surface-elevated border border-border transition-all duration-500 ${
-        visible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"
+        visible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'
       }`}
     >
       <div className={`w-2 h-2 rounded-full ${colors[type]} animate-pulse`} />
-      <span className="font-mono text-xs text-muted truncate max-w-[180px]">{event}</span>
+      <span className="font-mono text-xs text-muted truncate max-w-[180px]">
+        {event}
+      </span>
       <span className="ml-auto text-xs text-emerald-400">200 OK</span>
     </div>
   );
@@ -104,16 +149,21 @@ function WebhookEvent({ delay, type, event }: { delay: number; type: string; eve
 // Live event stream visualization
 function EventStream() {
   const events = [
-    { type: "stripe", delay: 0, event: "payment_intent.succeeded" },
-    { type: "docusign", delay: 400, event: "envelope-completed" },
-    { type: "dodo", delay: 800, event: "payment.succeeded" },
-    { type: "github", delay: 1200, event: "pull_request.opened" },
+    { type: 'stripe', delay: 0, event: 'payment_intent.succeeded' },
+    { type: 'docusign', delay: 400, event: 'envelope-completed' },
+    { type: 'dodo', delay: 800, event: 'payment.succeeded' },
+    { type: 'github', delay: 1200, event: 'pull_request.opened' },
   ];
 
   return (
     <div className="space-y-2">
       {events.map((e, i) => (
-        <WebhookEvent key={i} delay={e.delay} type={e.type} event={e.event} />
+        <WebhookEvent
+          key={i}
+          delay={e.delay}
+          type={e.type}
+          event={e.event}
+        />
       ))}
     </div>
   );
@@ -134,7 +184,7 @@ function FeatureCard({
   return (
     <div
       className={`group p-6 rounded-2xl bg-surface border border-border hover:border-accent/30 transition-all duration-300 animate-slide-up opacity-0 ${delay}`}
-      style={{ animationFillMode: "forwards" }}
+      style={{ animationFillMode: 'forwards' }}
     >
       <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4 group-hover:bg-accent/20 transition-colors">
         {icon}
@@ -173,10 +223,10 @@ function PricingCard({
 }) {
   return (
     <div
-      className={`relative p-8 rounded-2xl border transition-all duration-300 ${
+      className={`flex flex-col relative p-8 rounded-2xl border transition-all duration-300 ${
         highlighted
-          ? "bg-surface-elevated border-accent/50 glow-amber-sm"
-          : "bg-surface border-border hover:border-accent/30"
+          ? 'bg-surface-elevated border-accent/50 glow-amber-sm'
+          : 'bg-surface border-border hover:border-accent/30'
       }`}
     >
       {highlighted && (
@@ -187,12 +237,15 @@ function PricingCard({
       <h3 className="text-xl font-semibold mb-1">{tier}</h3>
       <div className="flex items-baseline gap-1 mb-2">
         <span className="text-4xl font-bold text-foreground">{price}</span>
-        {price !== "Free" && <span className="text-muted">/month</span>}
+        {price !== 'Free' && <span className="text-muted">/month</span>}
       </div>
       <p className="text-muted text-sm mb-6">{description}</p>
-      <ul className="space-y-3 mb-8">
+      <ul className="space-y-3 mb-8 flex-1">
         {features.map((feature, i) => (
-          <li key={i} className="flex items-center gap-3 text-sm">
+          <li
+            key={i}
+            className="flex items-center gap-3 text-sm"
+          >
             <svg
               className="w-4 h-4 text-accent flex-shrink-0"
               fill="none"
@@ -210,15 +263,16 @@ function PricingCard({
           </li>
         ))}
       </ul>
-      <button
-        className={`w-full py-3 rounded-lg font-medium transition-all duration-300 ${
+      <a
+        href="#waitlist"
+        className={`w-full py-3 rounded-lg font-medium transition-all duration-300 block text-center ${
           highlighted
-            ? "bg-accent text-background hover:bg-accent-dim"
-            : "bg-surface-elevated border border-border hover:border-accent/50 text-foreground"
+            ? 'bg-accent text-background hover:bg-accent-dim'
+            : 'bg-surface-elevated border border-border hover:border-accent/50 text-foreground'
         }`}
       >
-        {price === "Free" ? "Start Free" : "Get Started"}
-      </button>
+        Join Waitlist
+      </a>
     </div>
   );
 }
@@ -237,7 +291,9 @@ function Testimonial({
 }) {
   return (
     <div className="p-6 rounded-2xl bg-surface border border-border">
-      <p className="text-foreground mb-4 leading-relaxed">&ldquo;{quote}&rdquo;</p>
+      <p className="text-foreground mb-4 leading-relaxed">
+        &ldquo;{quote}&rdquo;
+      </p>
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center">
           <span className="text-accent font-medium">{author[0]}</span>
@@ -255,11 +311,13 @@ function Testimonial({
 
 export default function Home() {
   const [copied, setCopied] = useState(false);
-  const [dashboardView, setDashboardView] = useState<"events" | "workflows">("events");
+  const [dashboardView, setDashboardView] = useState<'events' | 'workflows'>(
+    'events'
+  );
   const [selectedWorkflow, setSelectedWorkflow] = useState<string | null>(null);
 
   const copyCommand = () => {
-    navigator.clipboard.writeText("npx hookone relay");
+    navigator.clipboard.writeText('npx hookone relay');
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -288,24 +346,31 @@ export default function Home() {
             <span className="font-semibold text-lg">HookOne</span>
           </div>
           <div className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-sm text-muted hover:text-foreground transition-colors">
+            <a
+              href="#features"
+              className="text-sm text-muted hover:text-foreground transition-colors"
+            >
               Features
             </a>
-            <a href="#pricing" className="text-sm text-muted hover:text-foreground transition-colors">
+            <a
+              href="#pricing"
+              className="text-sm text-muted hover:text-foreground transition-colors"
+            >
               Pricing
             </a>
-            <a href="#" className="text-sm text-muted hover:text-foreground transition-colors">
+            <a
+              href="#"
+              className="text-sm text-muted hover:text-foreground transition-colors"
+            >
               Docs
             </a>
           </div>
-          <div className="flex items-center gap-4">
-            <button className="text-sm text-muted hover:text-foreground transition-colors">
-              Sign in
-            </button>
-            <button className="px-4 py-2 bg-accent text-background text-sm font-medium rounded-lg hover:bg-accent-dim transition-colors">
-              Get Started
-            </button>
-          </div>
+          <a
+            href="#waitlist"
+            className="px-4 py-2 bg-accent text-background text-sm font-medium rounded-lg hover:bg-accent-dim transition-colors"
+          >
+            Join Waitlist
+          </a>
         </div>
       </nav>
 
@@ -314,24 +379,45 @@ export default function Home() {
         <div className="max-w-6xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 mb-6 animate-slide-up opacity-0" style={{ animationFillMode: "forwards" }}>
+              <div
+                className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 mb-6 animate-slide-up opacity-0"
+                style={{ animationFillMode: 'forwards' }}
+              >
                 <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-                <span className="text-xs text-accent font-medium">Your URL never changes</span>
+                <span className="text-xs text-accent font-medium">
+                  Your URL never changes
+                </span>
               </div>
-              <h1 className="text-5xl md:text-6xl font-bold leading-tight mb-6 animate-slide-up opacity-0 delay-100" style={{ animationFillMode: "forwards" }}>
-                Webhook testing,{" "}
+              <h1
+                className="text-5xl md:text-6xl font-bold leading-tight mb-6 animate-slide-up opacity-0 delay-100"
+                style={{ animationFillMode: 'forwards' }}
+              >
+                Webhook testing,{' '}
                 <span className="text-accent text-glow">simplified</span>
               </h1>
-              <p className="text-lg text-muted leading-relaxed mb-8 max-w-lg animate-slide-up opacity-0 delay-200" style={{ animationFillMode: "forwards" }}>
-                Get a permanent URL for all your webhooks. Inspect payloads, replay events, and relay to localhost. No more ngrok URL shuffling.
+              <p
+                className="text-lg text-muted leading-relaxed mb-8 max-w-lg animate-slide-up opacity-0 delay-200"
+                style={{ animationFillMode: 'forwards' }}
+              >
+                Get a permanent URL for all your webhooks. Inspect payloads,
+                replay events, and relay to localhost. No more ngrok URL
+                shuffling.
               </p>
-              <div className="mb-8 animate-slide-up opacity-0 delay-300 max-w-md relative" style={{ animationFillMode: "forwards" }}>
+              <div
+                className="mb-8 animate-slide-up opacity-0 delay-300 max-w-md relative"
+                style={{ animationFillMode: 'forwards' }}
+              >
                 <WaitlistForm />
               </div>
 
               {/* CLI Install */}
-              <div className="animate-slide-up opacity-0 delay-400" style={{ animationFillMode: "forwards" }}>
-                <p className="text-xs text-muted mb-2">Or relay to localhost with our CLI:</p>
+              <div
+                className="animate-slide-up opacity-0 delay-400"
+                style={{ animationFillMode: 'forwards' }}
+              >
+                <p className="text-xs text-muted mb-2">
+                  Or relay to localhost with our CLI:
+                </p>
                 <div
                   className="code-block cursor-pointer group"
                   onClick={copyCommand}
@@ -342,12 +428,12 @@ export default function Home() {
                     <div className="code-dot bg-green-500/80" />
                     <span className="ml-2 text-xs text-muted">terminal</span>
                     <span className="ml-auto text-xs text-muted group-hover:text-accent transition-colors">
-                      {copied ? "Copied!" : "Click to copy"}
+                      {copied ? 'Copied!' : 'Click to copy'}
                     </span>
                   </div>
                   <div className="p-4 font-mono text-sm">
-                    <span className="text-muted">$</span>{" "}
-                    <span className="text-emerald-400">npx</span>{" "}
+                    <span className="text-muted">$</span>{' '}
+                    <span className="text-emerald-400">npx</span>{' '}
                     <span className="text-foreground">hooklab relay</span>
                   </div>
                 </div>
@@ -355,7 +441,10 @@ export default function Home() {
             </div>
 
             {/* Live Event Stream */}
-            <div className="relative animate-slide-in-right opacity-0 delay-300" style={{ animationFillMode: "forwards" }}>
+            <div
+              className="relative animate-slide-in-right opacity-0 delay-300"
+              style={{ animationFillMode: 'forwards' }}
+            >
               <div className="absolute -inset-4 bg-accent/5 rounded-3xl blur-2xl" />
               <div className="relative p-6 rounded-2xl bg-surface border border-border">
                 <div className="flex items-center justify-between mb-4">
@@ -383,35 +472,69 @@ export default function Home() {
       {/* Trusted By */}
       <section className="py-12 px-6 border-y border-border/50">
         <div className="max-w-6xl mx-auto">
-          <p className="text-center text-sm text-muted mb-6">Works with your favorite platforms</p>
+          <p className="text-center text-sm text-muted mb-6">
+            Works with your favorite platforms
+          </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <PlatformLogo name="Stripe" color="violet-500" />
-            <PlatformLogo name="DocuSign" color="yellow-500" />
-            <PlatformLogo name="DodoPayments" color="emerald-500" />
-            <PlatformLogo name="GitHub" color="zinc-400" />
-            <PlatformLogo name="Shopify" color="lime-500" />
-            <PlatformLogo name="Twilio" color="red-500" />
+            <PlatformLogo
+              name="Stripe"
+              color="violet-500"
+            />
+            <PlatformLogo
+              name="DocuSign"
+              color="yellow-500"
+            />
+            <PlatformLogo
+              name="DodoPayments"
+              color="emerald-500"
+            />
+            <PlatformLogo
+              name="GitHub"
+              color="zinc-400"
+            />
+            <PlatformLogo
+              name="Shopify"
+              color="lime-500"
+            />
+            <PlatformLogo
+              name="Twilio"
+              color="red-500"
+            />
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-24 px-6">
+      <section
+        id="features"
+        className="py-24 px-6"
+      >
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
               Everything you need for webhook testing
             </h2>
             <p className="text-muted max-w-2xl mx-auto">
-              From development to production, HookOne gives you the tools to build reliable webhook integrations.
+              From development to production, HookOne gives you the tools to
+              build reliable webhook integrations.
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             <FeatureCard
               icon={
-                <svg className="w-6 h-6 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                <svg
+                  className="w-6 h-6 text-accent"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+                  />
                 </svg>
               }
               title="Permanent URLs"
@@ -420,8 +543,18 @@ export default function Home() {
             />
             <FeatureCard
               icon={
-                <svg className="w-6 h-6 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                <svg
+                  className="w-6 h-6 text-accent"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
                 </svg>
               }
               title="Localhost Relay"
@@ -430,8 +563,18 @@ export default function Home() {
             />
             <FeatureCard
               icon={
-                <svg className="w-6 h-6 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                <svg
+                  className="w-6 h-6 text-accent"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                  />
                 </svg>
               }
               title="Event Replay"
@@ -440,8 +583,18 @@ export default function Home() {
             />
             <FeatureCard
               icon={
-                <svg className="w-6 h-6 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                <svg
+                  className="w-6 h-6 text-accent"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+                  />
                 </svg>
               }
               title="Payload Inspector"
@@ -450,8 +603,18 @@ export default function Home() {
             />
             <FeatureCard
               icon={
-                <svg className="w-6 h-6 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                <svg
+                  className="w-6 h-6 text-accent"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"
+                  />
                 </svg>
               }
               title="Mock Workflows"
@@ -460,8 +623,18 @@ export default function Home() {
             />
             <FeatureCard
               icon={
-                <svg className="w-6 h-6 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                <svg
+                  className="w-6 h-6 text-accent"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                  />
                 </svg>
               }
               title="Secure by Default"
@@ -480,7 +653,8 @@ export default function Home() {
               A dashboard built for developers
             </h2>
             <p className="text-muted max-w-2xl mx-auto">
-              Clean, fast, and packed with the details you need. No bloat, no confusion.
+              Clean, fast, and packed with the details you need. No bloat, no
+              confusion.
             </p>
           </div>
 
@@ -493,8 +667,18 @@ export default function Home() {
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-2">
                     <div className="w-6 h-6 rounded bg-accent flex items-center justify-center">
-                      <svg className="w-4 h-4 text-background" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      <svg
+                        className="w-4 h-4 text-background"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13 10V3L4 14h7v7l9-11h-7z"
+                        />
                       </svg>
                     </div>
                     <span className="font-medium text-sm">HookOne</span>
@@ -505,7 +689,9 @@ export default function Home() {
                 <div className="flex items-center gap-3">
                   <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface border border-border">
                     <div className="w-2 h-2 rounded-full bg-emerald-400" />
-                    <span className="text-xs font-mono text-muted">hookone.dev/wh/a1b2c3</span>
+                    <span className="text-xs font-mono text-muted">
+                      hookone.dev/wh/a1b2c3
+                    </span>
                   </div>
                 </div>
               </div>
@@ -516,31 +702,76 @@ export default function Home() {
                 <div className="w-48 border-r border-border p-4 hidden md:block">
                   <div className="space-y-1">
                     <button
-                      onClick={() => { setDashboardView("events"); setSelectedWorkflow(null); }}
+                      onClick={() => {
+                        setDashboardView('events');
+                        setSelectedWorkflow(null);
+                      }}
                       className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
-                        dashboardView === "events" ? "bg-accent/10 text-accent" : "text-muted hover:bg-surface-elevated"
+                        dashboardView === 'events'
+                          ? 'bg-accent/10 text-accent'
+                          : 'text-muted hover:bg-surface-elevated'
                       }`}
                     >
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13 10V3L4 14h7v7l9-11h-7z"
+                        />
                       </svg>
                       Events
                     </button>
                     <button
-                      onClick={() => { setDashboardView("workflows"); setSelectedWorkflow(null); }}
+                      onClick={() => {
+                        setDashboardView('workflows');
+                        setSelectedWorkflow(null);
+                      }}
                       className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
-                        dashboardView === "workflows" ? "bg-accent/10 text-accent" : "text-muted hover:bg-surface-elevated"
+                        dashboardView === 'workflows'
+                          ? 'bg-accent/10 text-accent'
+                          : 'text-muted hover:bg-surface-elevated'
                       }`}
                     >
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"
+                        />
                       </svg>
                       Workflows
                     </button>
                     <button className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-muted text-sm hover:bg-surface-elevated transition-colors">
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
                       </svg>
                       Settings
                     </button>
@@ -549,7 +780,7 @@ export default function Home() {
 
                 {/* Main Content */}
                 <div className="flex-1 p-6">
-                  {dashboardView === "events" ? (
+                  {dashboardView === 'events' ? (
                     <>
                       <div className="flex items-center justify-between mb-6">
                         <h3 className="font-semibold">Recent Events</h3>
@@ -558,7 +789,7 @@ export default function Home() {
                             Filter
                           </button>
                           <button
-                            onClick={() => setDashboardView("workflows")}
+                            onClick={() => setDashboardView('workflows')}
                             className="px-3 py-1.5 text-xs rounded-lg bg-accent text-background hover:bg-accent-dim transition-colors"
                           >
                             + New Workflow
@@ -569,11 +800,36 @@ export default function Home() {
                       {/* Event List */}
                       <div className="space-y-2">
                         {[
-                          { event: "payment_intent.succeeded", source: "Stripe", time: "2s ago", status: "success" },
-                          { event: "envelope-completed", source: "DocuSign", time: "1m ago", status: "success" },
-                          { event: "payment.succeeded", source: "Dodo", time: "5m ago", status: "success" },
-                          { event: "pull_request.opened", source: "GitHub", time: "12m ago", status: "success" },
-                          { event: "payment_intent.payment_failed", source: "Stripe", time: "1h ago", status: "error" },
+                          {
+                            event: 'payment_intent.succeeded',
+                            source: 'Stripe',
+                            time: '2s ago',
+                            status: 'success',
+                          },
+                          {
+                            event: 'envelope-completed',
+                            source: 'DocuSign',
+                            time: '1m ago',
+                            status: 'success',
+                          },
+                          {
+                            event: 'payment.succeeded',
+                            source: 'Dodo',
+                            time: '5m ago',
+                            status: 'success',
+                          },
+                          {
+                            event: 'pull_request.opened',
+                            source: 'GitHub',
+                            time: '12m ago',
+                            status: 'success',
+                          },
+                          {
+                            event: 'payment_intent.payment_failed',
+                            source: 'Stripe',
+                            time: '1h ago',
+                            status: 'error',
+                          },
                         ].map((item, i) => (
                           <div
                             key={i}
@@ -581,12 +837,20 @@ export default function Home() {
                           >
                             <div
                               className={`w-2 h-2 rounded-full ${
-                                item.status === "success" ? "bg-emerald-400" : "bg-red-400"
+                                item.status === 'success'
+                                  ? 'bg-emerald-400'
+                                  : 'bg-red-400'
                               }`}
                             />
-                            <span className="font-mono text-sm text-foreground flex-1">{item.event}</span>
-                            <span className="text-xs text-muted">{item.source}</span>
-                            <span className="text-xs text-muted w-16 text-right">{item.time}</span>
+                            <span className="font-mono text-sm text-foreground flex-1">
+                              {item.event}
+                            </span>
+                            <span className="text-xs text-muted">
+                              {item.source}
+                            </span>
+                            <span className="text-xs text-muted w-16 text-right">
+                              {item.time}
+                            </span>
                             <button className="opacity-0 group-hover:opacity-100 text-xs text-accent transition-opacity">
                               Replay
                             </button>
@@ -602,53 +866,129 @@ export default function Home() {
                           onClick={() => setSelectedWorkflow(null)}
                           className="p-1.5 rounded-lg hover:bg-surface-elevated transition-colors text-muted hover:text-foreground"
                         >
-                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M15 19l-7-7 7-7"
+                            />
                           </svg>
                         </button>
                         <h3 className="font-semibold">{selectedWorkflow}</h3>
-                        <span className="text-xs text-emerald-400 px-2 py-1 rounded-full bg-emerald-500/10">Ready</span>
+                        <span className="text-xs text-emerald-400 px-2 py-1 rounded-full bg-emerald-500/10">
+                          Ready
+                        </span>
                       </div>
 
                       {/* Workflow Detail */}
                       <div className="grid gap-6">
                         <div className="p-4 rounded-xl bg-surface-elevated border border-border">
                           <div className="flex items-center justify-between mb-4">
-                            <span className="text-sm text-muted">Workflow Steps</span>
+                            <span className="text-sm text-muted">
+                              Workflow Steps
+                            </span>
                             <span className="text-xs text-muted">4 events</span>
                           </div>
                           <div className="relative">
                             {/* Timeline line */}
                             <div className="absolute left-3 top-3 bottom-3 w-px bg-border" />
                             <div className="space-y-4">
-                              {(selectedWorkflow === "Stripe Payment Flow" ? [
-                                { event: "payment_intent.created", desc: "Customer initiates payment" },
-                                { event: "payment_intent.processing", desc: "Payment is being processed" },
-                                { event: "charge.succeeded", desc: "Charge completed successfully" },
-                                { event: "payment_intent.succeeded", desc: "Payment intent fulfilled" },
-                              ] : selectedWorkflow === "DocuSign Envelope Flow" ? [
-                                { event: "envelope-sent", desc: "Email notification sent to recipient" },
-                                { event: "envelope-delivered", desc: "Recipient opened envelope" },
-                                { event: "recipient-completed", desc: "Recipient completed signing" },
-                                { event: "envelope-completed", desc: "All recipients finished" },
-                              ] : selectedWorkflow === "GitHub PR Flow" ? [
-                                { event: "pull_request.opened", desc: "Pull request created" },
-                                { event: "pull_request.synchronize", desc: "New commits pushed" },
-                                { event: "check_run.completed", desc: "CI checks passed" },
-                                { event: "pull_request.closed", desc: "PR merged (merged=true)" },
-                              ] : [
-                                { event: "payment.succeeded", desc: "Payment confirmed" },
-                                { event: "subscription.created", desc: "Subscription initialized" },
-                                { event: "subscription.active", desc: "Subscription activated" },
-                                { event: "refund.created", desc: "Refund processed" },
-                              ]).map((step, i) => (
-                                <div key={i} className="flex items-start gap-4 relative">
+                              {(selectedWorkflow === 'Stripe Payment Flow'
+                                ? [
+                                    {
+                                      event: 'payment_intent.created',
+                                      desc: 'Customer initiates payment',
+                                    },
+                                    {
+                                      event: 'payment_intent.processing',
+                                      desc: 'Payment is being processed',
+                                    },
+                                    {
+                                      event: 'charge.succeeded',
+                                      desc: 'Charge completed successfully',
+                                    },
+                                    {
+                                      event: 'payment_intent.succeeded',
+                                      desc: 'Payment intent fulfilled',
+                                    },
+                                  ]
+                                : selectedWorkflow === 'DocuSign Envelope Flow'
+                                ? [
+                                    {
+                                      event: 'envelope-sent',
+                                      desc: 'Email notification sent to recipient',
+                                    },
+                                    {
+                                      event: 'envelope-delivered',
+                                      desc: 'Recipient opened envelope',
+                                    },
+                                    {
+                                      event: 'recipient-completed',
+                                      desc: 'Recipient completed signing',
+                                    },
+                                    {
+                                      event: 'envelope-completed',
+                                      desc: 'All recipients finished',
+                                    },
+                                  ]
+                                : selectedWorkflow === 'GitHub PR Flow'
+                                ? [
+                                    {
+                                      event: 'pull_request.opened',
+                                      desc: 'Pull request created',
+                                    },
+                                    {
+                                      event: 'pull_request.synchronize',
+                                      desc: 'New commits pushed',
+                                    },
+                                    {
+                                      event: 'check_run.completed',
+                                      desc: 'CI checks passed',
+                                    },
+                                    {
+                                      event: 'pull_request.closed',
+                                      desc: 'PR merged (merged=true)',
+                                    },
+                                  ]
+                                : [
+                                    {
+                                      event: 'payment.succeeded',
+                                      desc: 'Payment confirmed',
+                                    },
+                                    {
+                                      event: 'subscription.created',
+                                      desc: 'Subscription initialized',
+                                    },
+                                    {
+                                      event: 'subscription.active',
+                                      desc: 'Subscription activated',
+                                    },
+                                    {
+                                      event: 'refund.created',
+                                      desc: 'Refund processed',
+                                    },
+                                  ]
+                              ).map((step, i) => (
+                                <div
+                                  key={i}
+                                  className="flex items-start gap-4 relative"
+                                >
                                   <div className="w-6 h-6 rounded-full bg-accent/20 flex items-center justify-center text-xs text-accent font-medium z-10">
                                     {i + 1}
                                   </div>
                                   <div className="flex-1 pt-0.5">
-                                    <span className="font-mono text-sm text-foreground">{step.event}</span>
-                                    <p className="text-xs text-muted mt-0.5">{step.desc}</p>
+                                    <span className="font-mono text-sm text-foreground">
+                                      {step.event}
+                                    </span>
+                                    <p className="text-xs text-muted mt-0.5">
+                                      {step.desc}
+                                    </p>
                                   </div>
                                 </div>
                               ))}
@@ -659,7 +999,9 @@ export default function Home() {
                         {/* Sample Payload Preview */}
                         <div className="p-4 rounded-xl bg-surface-elevated border border-border">
                           <div className="flex items-center justify-between mb-3">
-                            <span className="text-sm text-muted">Sample Payload</span>
+                            <span className="text-sm text-muted">
+                              Sample Payload
+                            </span>
                             <button className="text-xs text-accent hover:text-accent-dim transition-colors">
                               Copy JSON
                             </button>
@@ -667,7 +1009,11 @@ export default function Home() {
                           <div className="font-mono text-xs text-muted bg-background rounded-lg p-3 overflow-x-auto">
                             <pre>{`{
   "id": "evt_${Math.random().toString(36).slice(2, 10)}",
-  "type": "${selectedWorkflow === "Stripe Payment Flow" ? "payment_intent.succeeded" : "event.completed"}",
+  "type": "${
+    selectedWorkflow === 'Stripe Payment Flow'
+      ? 'payment_intent.succeeded'
+      : 'event.completed'
+  }",
   "data": {
     "object": {
       "amount": 2000,
@@ -703,33 +1049,83 @@ export default function Home() {
                       {/* Workflow List */}
                       <div className="grid gap-3">
                         {[
-                          { name: "Stripe Payment Flow", events: 4, platform: "Stripe", color: "violet" },
-                          { name: "DocuSign Envelope Flow", events: 4, platform: "DocuSign", color: "yellow" },
-                          { name: "GitHub PR Flow", events: 4, platform: "GitHub", color: "zinc" },
-                          { name: "Dodo Payments Flow", events: 4, platform: "Dodo", color: "emerald" },
+                          {
+                            name: 'Stripe Payment Flow',
+                            events: 4,
+                            platform: 'Stripe',
+                            color: 'violet',
+                          },
+                          {
+                            name: 'DocuSign Envelope Flow',
+                            events: 4,
+                            platform: 'DocuSign',
+                            color: 'yellow',
+                          },
+                          {
+                            name: 'GitHub PR Flow',
+                            events: 4,
+                            platform: 'GitHub',
+                            color: 'zinc',
+                          },
+                          {
+                            name: 'Dodo Payments Flow',
+                            events: 4,
+                            platform: 'Dodo',
+                            color: 'emerald',
+                          },
                         ].map((workflow, i) => (
                           <button
                             key={i}
                             onClick={() => setSelectedWorkflow(workflow.name)}
                             className="flex items-center gap-4 px-4 py-4 rounded-xl bg-surface-elevated border border-border hover:border-accent/30 transition-all cursor-pointer group text-left w-full"
                           >
-                            <div className={`w-10 h-10 rounded-lg bg-${workflow.color}-500/10 flex items-center justify-center`}>
-                              <svg className={`w-5 h-5 text-${workflow.color}-400`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                            <div
+                              className={`w-10 h-10 rounded-lg bg-${workflow.color}-500/10 flex items-center justify-center`}
+                            >
+                              <svg
+                                className={`w-5 h-5 text-${workflow.color}-400`}
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"
+                                />
                               </svg>
                             </div>
                             <div className="flex-1">
-                              <span className="font-medium text-sm text-foreground">{workflow.name}</span>
+                              <span className="font-medium text-sm text-foreground">
+                                {workflow.name}
+                              </span>
                               <div className="flex items-center gap-2 mt-1">
-                                <span className="text-xs text-muted">{workflow.platform}</span>
+                                <span className="text-xs text-muted">
+                                  {workflow.platform}
+                                </span>
                                 <span className="text-xs text-muted">•</span>
-                                <span className="text-xs text-muted">{workflow.events} events</span>
+                                <span className="text-xs text-muted">
+                                  {workflow.events} events
+                                </span>
                               </div>
                             </div>
                             <div className="flex items-center gap-2">
-                              <span className="text-xs text-emerald-400 px-2 py-1 rounded-full bg-emerald-500/10">Ready</span>
-                              <svg className="w-4 h-4 text-muted group-hover:text-accent transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                              <span className="text-xs text-emerald-400 px-2 py-1 rounded-full bg-emerald-500/10">
+                                Ready
+                              </span>
+                              <svg
+                                className="w-4 h-4 text-muted group-hover:text-accent transition-colors"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M9 5l7 7-7 7"
+                                />
                               </svg>
                             </div>
                           </button>
@@ -750,28 +1146,67 @@ export default function Home() {
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-6">
-                <svg className="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                <svg
+                  className="w-4 h-4 text-emerald-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"
+                  />
                 </svg>
-                <span className="text-xs text-emerald-400 font-medium">Mock Workflows</span>
+                <span className="text-xs text-emerald-400 font-medium">
+                  Mock Workflows
+                </span>
               </div>
               <h2 className="text-3xl md:text-4xl font-bold mb-6">
                 Test without signing up for anything
               </h2>
               <p className="text-muted leading-relaxed mb-8">
-                Skip the account creation dance. Use our pre-built workflows to simulate webhooks from popular platforms. Perfect for testing your integration logic before going live.
+                Skip the account creation dance. Use our pre-built workflows to
+                simulate webhooks from popular platforms. Perfect for testing
+                your integration logic before going live.
               </p>
               <div className="space-y-4">
                 {[
-                  { name: "Stripe", desc: "Payment intents, subscriptions, invoices" },
-                  { name: "DodoPayments", desc: "Payment events, refunds, disputes" },
-                  { name: "DocuSign", desc: "Envelope status, recipient events" },
-                  { name: "GitHub", desc: "Push, PR, issue, and deployment events" },
+                  {
+                    name: 'Stripe',
+                    desc: 'Payment intents, subscriptions, invoices',
+                  },
+                  {
+                    name: 'DodoPayments',
+                    desc: 'Payment events, refunds, disputes',
+                  },
+                  {
+                    name: 'DocuSign',
+                    desc: 'Envelope status, recipient events',
+                  },
+                  {
+                    name: 'GitHub',
+                    desc: 'Push, PR, issue, and deployment events',
+                  },
                 ].map((platform, i) => (
-                  <div key={i} className="flex items-center gap-4">
+                  <div
+                    key={i}
+                    className="flex items-center gap-4"
+                  >
                     <div className="w-8 h-8 rounded-lg bg-surface-elevated flex items-center justify-center">
-                      <svg className="w-4 h-4 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      <svg
+                        className="w-4 h-4 text-accent"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 13l4 4L19 7"
+                        />
                       </svg>
                     </div>
                     <div>
@@ -789,22 +1224,40 @@ export default function Home() {
               <div className="relative p-6 rounded-2xl bg-surface border border-border">
                 <div className="flex items-center justify-between mb-6">
                   <h4 className="font-medium">Stripe Payment Flow</h4>
-                  <span className="text-xs text-emerald-400 px-2 py-1 rounded-full bg-emerald-500/10">Ready</span>
+                  <span className="text-xs text-emerald-400 px-2 py-1 rounded-full bg-emerald-500/10">
+                    Ready
+                  </span>
                 </div>
                 <div className="space-y-3">
                   {[
-                    { event: "payment_intent.created", desc: "Intent initialized" },
-                    { event: "payment_intent.processing", desc: "Processing payment" },
-                    { event: "charge.succeeded", desc: "Charge completed" },
-                    { event: "payment_intent.succeeded", desc: "Payment fulfilled" },
+                    {
+                      event: 'payment_intent.created',
+                      desc: 'Intent initialized',
+                    },
+                    {
+                      event: 'payment_intent.processing',
+                      desc: 'Processing payment',
+                    },
+                    { event: 'charge.succeeded', desc: 'Charge completed' },
+                    {
+                      event: 'payment_intent.succeeded',
+                      desc: 'Payment fulfilled',
+                    },
                   ].map((step, i) => (
-                    <div key={i} className="flex items-center gap-3">
+                    <div
+                      key={i}
+                      className="flex items-center gap-3"
+                    >
                       <div className="w-6 h-6 rounded-full bg-surface-elevated flex items-center justify-center text-xs text-muted">
                         {i + 1}
                       </div>
                       <div className="flex-1">
-                        <span className="font-mono text-sm text-foreground">{step.event}</span>
-                        <span className="text-xs text-muted ml-2">{step.desc}</span>
+                        <span className="font-mono text-sm text-foreground">
+                          {step.event}
+                        </span>
+                        <span className="text-xs text-muted ml-2">
+                          {step.desc}
+                        </span>
                       </div>
                     </div>
                   ))}
@@ -819,7 +1272,10 @@ export default function Home() {
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="py-24 px-6 border-t border-border/50">
+      <section
+        id="pricing"
+        className="py-24 px-6 border-t border-border/50"
+      >
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
@@ -836,11 +1292,11 @@ export default function Home() {
               price="Free"
               description="Perfect for side projects and learning"
               features={[
-                "1 permanent webhook URL",
-                "100 events / month",
-                "7-day event history",
-                "CLI localhost relay",
-                "3 mock workflows",
+                '1 permanent webhook URL',
+                '100 events / month',
+                '7-day event history',
+                'CLI localhost relay',
+                '3 mock workflows',
               ]}
             />
             <PricingCard
@@ -848,13 +1304,13 @@ export default function Home() {
               price="$12"
               description="For professional developers and teams"
               features={[
-                "Unlimited webhook URLs",
-                "Unlimited events",
-                "30-day event history",
-                "Priority localhost relay",
-                "All mock workflows",
-                "Team collaboration",
-                "Webhook signature verification",
+                'Unlimited webhook URLs',
+                'Unlimited events',
+                '30-day event history',
+                'Priority localhost relay',
+                'All mock workflows',
+                'Team collaboration',
+                'Webhook signature verification',
               ]}
               highlighted
             />
@@ -895,7 +1351,10 @@ export default function Home() {
       </section>
 
       {/* CTA Footer */}
-      <section className="py-24 px-6 border-t border-border/50">
+      <section
+        id="waitlist"
+        className="py-24 px-6 border-t border-border/50"
+      >
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
             Ready to simplify your webhook testing?
@@ -932,10 +1391,30 @@ export default function Home() {
               <span className="font-semibold">HookOne</span>
             </div>
             <div className="flex items-center gap-8 text-sm text-muted">
-              <a href="#" className="hover:text-foreground transition-colors">Documentation</a>
-              <a href="#" className="hover:text-foreground transition-colors">GitHub</a>
-              <a href="#" className="hover:text-foreground transition-colors">Twitter</a>
-              <a href="#" className="hover:text-foreground transition-colors">Discord</a>
+              <a
+                href="#"
+                className="hover:text-foreground transition-colors"
+              >
+                Documentation
+              </a>
+              <a
+                href="#"
+                className="hover:text-foreground transition-colors"
+              >
+                GitHub
+              </a>
+              <a
+                href="#"
+                className="hover:text-foreground transition-colors"
+              >
+                Twitter
+              </a>
+              <a
+                href="#"
+                className="hover:text-foreground transition-colors"
+              >
+                Discord
+              </a>
             </div>
             <p className="text-sm text-muted">
               © 2025 HookOne. All rights reserved.
