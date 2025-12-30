@@ -50,7 +50,7 @@ function WaitlistForm({
         } rounded-lg bg-emerald-500/10 border border-emerald-500/30`}
       >
         <svg
-          className="w-5 h-5 text-emerald-400 flex-shrink-0"
+          className="w-5 h-5 text-emerald-400 shrink-0"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -138,7 +138,7 @@ function WebhookEvent({
       }`}
     >
       <div className={`w-2 h-2 rounded-full ${colors[type]} animate-pulse`} />
-      <span className="font-mono text-xs text-muted truncate max-w-[180px]">
+      <span className="font-mono text-xs text-muted truncate max-w-45">
         {event}
       </span>
       <span className="ml-auto text-xs text-emerald-400">200 OK</span>
@@ -247,7 +247,7 @@ function PricingCard({
             className="flex items-center gap-3 text-sm"
           >
             <svg
-              className="w-4 h-4 text-accent flex-shrink-0"
+              className="w-4 h-4 text-accent shrink-0"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
