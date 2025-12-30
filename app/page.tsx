@@ -411,7 +411,7 @@ export default function Home() {
               </div>
 
               {/* CLI Install */}
-              <div
+              {/* <div
                 className="animate-slide-up opacity-0 delay-400"
                 style={{ animationFillMode: 'forwards' }}
               >
@@ -437,7 +437,7 @@ export default function Home() {
                     <span className="text-foreground">hooklab relay</span>
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
 
             {/* Live Event Stream */}
