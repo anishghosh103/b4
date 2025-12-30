@@ -73,7 +73,7 @@ function WaitlistForm({ variant = "default" }: { variant?: "default" | "large" }
 }
 
 // Animated webhook event for the hero
-function WebhookEvent({ delay, type }: { delay: number; type: string }) {
+function WebhookEvent({ delay, type, event }: { delay: number; type: string; event: string }) {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -95,8 +95,7 @@ function WebhookEvent({ delay, type }: { delay: number; type: string }) {
       }`}
     >
       <div className={`w-2 h-2 rounded-full ${colors[type]} animate-pulse`} />
-      <span className="font-mono text-sm text-muted">POST</span>
-      <span className="font-mono text-sm text-foreground">/webhook/{type}</span>
+      <span className="font-mono text-xs text-muted truncate max-w-[180px]">{event}</span>
       <span className="ml-auto text-xs text-emerald-400">200 OK</span>
     </div>
   );
@@ -105,16 +104,16 @@ function WebhookEvent({ delay, type }: { delay: number; type: string }) {
 // Live event stream visualization
 function EventStream() {
   const events = [
-    { type: "stripe", delay: 0 },
-    { type: "docusign", delay: 400 },
-    { type: "dodo", delay: 800 },
-    { type: "github", delay: 1200 },
+    { type: "stripe", delay: 0, event: "payment_intent.succeeded" },
+    { type: "docusign", delay: 400, event: "envelope-completed" },
+    { type: "dodo", delay: 800, event: "payment.succeeded" },
+    { type: "github", delay: 1200, event: "pull_request.opened" },
   ];
 
   return (
     <div className="space-y-2">
-      {events.map((event, i) => (
-        <WebhookEvent key={i} delay={event.delay} type={event.type} />
+      {events.map((e, i) => (
+        <WebhookEvent key={i} delay={e.delay} type={e.type} event={e.event} />
       ))}
     </div>
   );
@@ -256,6 +255,8 @@ function Testimonial({
 
 export default function Home() {
   const [copied, setCopied] = useState(false);
+  const [dashboardView, setDashboardView] = useState<"events" | "workflows">("events");
+  const [selectedWorkflow, setSelectedWorkflow] = useState<string | null>(null);
 
   const copyCommand = () => {
     navigator.clipboard.writeText("npx hookone relay");
@@ -514,69 +515,228 @@ export default function Home() {
                 {/* Sidebar */}
                 <div className="w-48 border-r border-border p-4 hidden md:block">
                   <div className="space-y-1">
-                    <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-accent/10 text-accent text-sm">
+                    <button
+                      onClick={() => { setDashboardView("events"); setSelectedWorkflow(null); }}
+                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
+                        dashboardView === "events" ? "bg-accent/10 text-accent" : "text-muted hover:bg-surface-elevated"
+                      }`}
+                    >
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                       </svg>
                       Events
-                    </div>
-                    <div className="flex items-center gap-2 px-3 py-2 rounded-lg text-muted text-sm hover:bg-surface-elevated transition-colors">
+                    </button>
+                    <button
+                      onClick={() => { setDashboardView("workflows"); setSelectedWorkflow(null); }}
+                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
+                        dashboardView === "workflows" ? "bg-accent/10 text-accent" : "text-muted hover:bg-surface-elevated"
+                      }`}
+                    >
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
                       </svg>
                       Workflows
-                    </div>
-                    <div className="flex items-center gap-2 px-3 py-2 rounded-lg text-muted text-sm hover:bg-surface-elevated transition-colors">
+                    </button>
+                    <button className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-muted text-sm hover:bg-surface-elevated transition-colors">
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                       </svg>
                       Settings
-                    </div>
+                    </button>
                   </div>
                 </div>
 
                 {/* Main Content */}
                 <div className="flex-1 p-6">
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="font-semibold">Recent Events</h3>
-                    <div className="flex items-center gap-2">
-                      <button className="px-3 py-1.5 text-xs rounded-lg bg-surface-elevated border border-border hover:border-accent/50 transition-colors">
-                        Filter
-                      </button>
-                      <button className="px-3 py-1.5 text-xs rounded-lg bg-accent text-background hover:bg-accent-dim transition-colors">
-                        + New Workflow
-                      </button>
-                    </div>
-                  </div>
+                  {dashboardView === "events" ? (
+                    <>
+                      <div className="flex items-center justify-between mb-6">
+                        <h3 className="font-semibold">Recent Events</h3>
+                        <div className="flex items-center gap-2">
+                          <button className="px-3 py-1.5 text-xs rounded-lg bg-surface-elevated border border-border hover:border-accent/50 transition-colors">
+                            Filter
+                          </button>
+                          <button
+                            onClick={() => setDashboardView("workflows")}
+                            className="px-3 py-1.5 text-xs rounded-lg bg-accent text-background hover:bg-accent-dim transition-colors"
+                          >
+                            + New Workflow
+                          </button>
+                        </div>
+                      </div>
 
-                  {/* Event List */}
-                  <div className="space-y-2">
-                    {[
-                      { event: "payment_intent.succeeded", source: "Stripe", time: "2s ago", status: "success" },
-                      { event: "envelope.completed", source: "DocuSign", time: "1m ago", status: "success" },
-                      { event: "payment.created", source: "Dodo", time: "5m ago", status: "success" },
-                      { event: "push", source: "GitHub", time: "12m ago", status: "success" },
-                      { event: "payment_intent.failed", source: "Stripe", time: "1h ago", status: "error" },
-                    ].map((item, i) => (
-                      <div
-                        key={i}
-                        className="flex items-center gap-4 px-4 py-3 rounded-lg bg-surface-elevated border border-border hover:border-accent/30 transition-colors cursor-pointer group"
-                      >
-                        <div
-                          className={`w-2 h-2 rounded-full ${
-                            item.status === "success" ? "bg-emerald-400" : "bg-red-400"
-                          }`}
-                        />
-                        <span className="font-mono text-sm text-foreground flex-1">{item.event}</span>
-                        <span className="text-xs text-muted">{item.source}</span>
-                        <span className="text-xs text-muted w-16 text-right">{item.time}</span>
-                        <button className="opacity-0 group-hover:opacity-100 text-xs text-accent transition-opacity">
-                          Replay
+                      {/* Event List */}
+                      <div className="space-y-2">
+                        {[
+                          { event: "payment_intent.succeeded", source: "Stripe", time: "2s ago", status: "success" },
+                          { event: "envelope-completed", source: "DocuSign", time: "1m ago", status: "success" },
+                          { event: "payment.succeeded", source: "Dodo", time: "5m ago", status: "success" },
+                          { event: "pull_request.opened", source: "GitHub", time: "12m ago", status: "success" },
+                          { event: "payment_intent.payment_failed", source: "Stripe", time: "1h ago", status: "error" },
+                        ].map((item, i) => (
+                          <div
+                            key={i}
+                            className="flex items-center gap-4 px-4 py-3 rounded-lg bg-surface-elevated border border-border hover:border-accent/30 transition-colors cursor-pointer group"
+                          >
+                            <div
+                              className={`w-2 h-2 rounded-full ${
+                                item.status === "success" ? "bg-emerald-400" : "bg-red-400"
+                              }`}
+                            />
+                            <span className="font-mono text-sm text-foreground flex-1">{item.event}</span>
+                            <span className="text-xs text-muted">{item.source}</span>
+                            <span className="text-xs text-muted w-16 text-right">{item.time}</span>
+                            <button className="opacity-0 group-hover:opacity-100 text-xs text-accent transition-opacity">
+                              Replay
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  ) : selectedWorkflow ? (
+                    /* Workflow Detail View */
+                    <>
+                      <div className="flex items-center gap-3 mb-6">
+                        <button
+                          onClick={() => setSelectedWorkflow(null)}
+                          className="p-1.5 rounded-lg hover:bg-surface-elevated transition-colors text-muted hover:text-foreground"
+                        >
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                          </svg>
+                        </button>
+                        <h3 className="font-semibold">{selectedWorkflow}</h3>
+                        <span className="text-xs text-emerald-400 px-2 py-1 rounded-full bg-emerald-500/10">Ready</span>
+                      </div>
+
+                      {/* Workflow Detail */}
+                      <div className="grid gap-6">
+                        <div className="p-4 rounded-xl bg-surface-elevated border border-border">
+                          <div className="flex items-center justify-between mb-4">
+                            <span className="text-sm text-muted">Workflow Steps</span>
+                            <span className="text-xs text-muted">4 events</span>
+                          </div>
+                          <div className="relative">
+                            {/* Timeline line */}
+                            <div className="absolute left-3 top-3 bottom-3 w-px bg-border" />
+                            <div className="space-y-4">
+                              {(selectedWorkflow === "Stripe Payment Flow" ? [
+                                { event: "payment_intent.created", desc: "Customer initiates payment" },
+                                { event: "payment_intent.processing", desc: "Payment is being processed" },
+                                { event: "charge.succeeded", desc: "Charge completed successfully" },
+                                { event: "payment_intent.succeeded", desc: "Payment intent fulfilled" },
+                              ] : selectedWorkflow === "DocuSign Envelope Flow" ? [
+                                { event: "envelope-sent", desc: "Email notification sent to recipient" },
+                                { event: "envelope-delivered", desc: "Recipient opened envelope" },
+                                { event: "recipient-completed", desc: "Recipient completed signing" },
+                                { event: "envelope-completed", desc: "All recipients finished" },
+                              ] : selectedWorkflow === "GitHub PR Flow" ? [
+                                { event: "pull_request.opened", desc: "Pull request created" },
+                                { event: "pull_request.synchronize", desc: "New commits pushed" },
+                                { event: "check_run.completed", desc: "CI checks passed" },
+                                { event: "pull_request.closed", desc: "PR merged (merged=true)" },
+                              ] : [
+                                { event: "payment.succeeded", desc: "Payment confirmed" },
+                                { event: "subscription.created", desc: "Subscription initialized" },
+                                { event: "subscription.active", desc: "Subscription activated" },
+                                { event: "refund.created", desc: "Refund processed" },
+                              ]).map((step, i) => (
+                                <div key={i} className="flex items-start gap-4 relative">
+                                  <div className="w-6 h-6 rounded-full bg-accent/20 flex items-center justify-center text-xs text-accent font-medium z-10">
+                                    {i + 1}
+                                  </div>
+                                  <div className="flex-1 pt-0.5">
+                                    <span className="font-mono text-sm text-foreground">{step.event}</span>
+                                    <p className="text-xs text-muted mt-0.5">{step.desc}</p>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Sample Payload Preview */}
+                        <div className="p-4 rounded-xl bg-surface-elevated border border-border">
+                          <div className="flex items-center justify-between mb-3">
+                            <span className="text-sm text-muted">Sample Payload</span>
+                            <button className="text-xs text-accent hover:text-accent-dim transition-colors">
+                              Copy JSON
+                            </button>
+                          </div>
+                          <div className="font-mono text-xs text-muted bg-background rounded-lg p-3 overflow-x-auto">
+                            <pre>{`{
+  "id": "evt_${Math.random().toString(36).slice(2, 10)}",
+  "type": "${selectedWorkflow === "Stripe Payment Flow" ? "payment_intent.succeeded" : "event.completed"}",
+  "data": {
+    "object": {
+      "amount": 2000,
+      "currency": "usd",
+      "status": "succeeded"
+    }
+  }
+}`}</pre>
+                          </div>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex gap-3">
+                          <button className="flex-1 py-3 rounded-lg bg-emerald-500/10 text-emerald-400 font-medium hover:bg-emerald-500/20 transition-colors">
+                            Run Workflow
+                          </button>
+                          <button className="px-4 py-3 rounded-lg bg-surface-elevated border border-border hover:border-accent/50 text-sm transition-colors">
+                            Edit
+                          </button>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    /* Workflows List View */
+                    <>
+                      <div className="flex items-center justify-between mb-6">
+                        <h3 className="font-semibold">Mock Workflows</h3>
+                        <button className="px-3 py-1.5 text-xs rounded-lg bg-accent text-background hover:bg-accent-dim transition-colors">
+                          + Create Custom
                         </button>
                       </div>
-                    ))}
-                  </div>
+
+                      {/* Workflow List */}
+                      <div className="grid gap-3">
+                        {[
+                          { name: "Stripe Payment Flow", events: 4, platform: "Stripe", color: "violet" },
+                          { name: "DocuSign Envelope Flow", events: 4, platform: "DocuSign", color: "yellow" },
+                          { name: "GitHub PR Flow", events: 4, platform: "GitHub", color: "zinc" },
+                          { name: "Dodo Payments Flow", events: 4, platform: "Dodo", color: "emerald" },
+                        ].map((workflow, i) => (
+                          <button
+                            key={i}
+                            onClick={() => setSelectedWorkflow(workflow.name)}
+                            className="flex items-center gap-4 px-4 py-4 rounded-xl bg-surface-elevated border border-border hover:border-accent/30 transition-all cursor-pointer group text-left w-full"
+                          >
+                            <div className={`w-10 h-10 rounded-lg bg-${workflow.color}-500/10 flex items-center justify-center`}>
+                              <svg className={`w-5 h-5 text-${workflow.color}-400`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                              </svg>
+                            </div>
+                            <div className="flex-1">
+                              <span className="font-medium text-sm text-foreground">{workflow.name}</span>
+                              <div className="flex items-center gap-2 mt-1">
+                                <span className="text-xs text-muted">{workflow.platform}</span>
+                                <span className="text-xs text-muted">•</span>
+                                <span className="text-xs text-muted">{workflow.events} events</span>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs text-emerald-400 px-2 py-1 rounded-full bg-emerald-500/10">Ready</span>
+                              <svg className="w-4 h-4 text-muted group-hover:text-accent transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                              </svg>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -633,16 +793,19 @@ export default function Home() {
                 </div>
                 <div className="space-y-3">
                   {[
-                    "payment_intent.created",
-                    "payment_intent.processing",
-                    "charge.succeeded",
-                    "payment_intent.succeeded",
-                  ].map((event, i) => (
+                    { event: "payment_intent.created", desc: "Intent initialized" },
+                    { event: "payment_intent.processing", desc: "Processing payment" },
+                    { event: "charge.succeeded", desc: "Charge completed" },
+                    { event: "payment_intent.succeeded", desc: "Payment fulfilled" },
+                  ].map((step, i) => (
                     <div key={i} className="flex items-center gap-3">
                       <div className="w-6 h-6 rounded-full bg-surface-elevated flex items-center justify-center text-xs text-muted">
                         {i + 1}
                       </div>
-                      <span className="font-mono text-sm text-foreground">{event}</span>
+                      <div className="flex-1">
+                        <span className="font-mono text-sm text-foreground">{step.event}</span>
+                        <span className="text-xs text-muted ml-2">{step.desc}</span>
+                      </div>
                     </div>
                   ))}
                 </div>
