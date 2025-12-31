@@ -86,10 +86,10 @@ function WebhookEvent({ delay, type, event }: WebhookEventProps) {
 
 export function EventStream() {
   const events: WebhookEventProps[] = [
-    { type: 'stripe', delay: 0, event: 'payment_intent.succeeded' },
-    { type: 'docusign', delay: 400, event: 'envelope-completed' },
-    { type: 'dodo', delay: 800, event: 'payment.succeeded' },
-    { type: 'github', delay: 1200, event: 'pull_request.opened' },
+    { type: 'stripe', delay: 50, event: 'payment_intent.succeeded' },
+    { type: 'docusign', delay: 150, event: 'envelope-completed' },
+    { type: 'dodo', delay: 250, event: 'payment.succeeded' },
+    { type: 'github', delay: 350, event: 'pull_request.opened' },
   ];
 
   return (
