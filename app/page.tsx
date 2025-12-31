@@ -963,7 +963,7 @@ function Footer() {
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           <Logo />
-          <div className="flex items-center gap-8 text-sm text-muted">
+          {/* <div className="flex items-center gap-8 text-sm text-muted">
             <a
               href="#"
               className="hover:text-foreground transition-colors"
@@ -988,7 +988,7 @@ function Footer() {
             >
               Discord
             </a>
-          </div>
+          </div> */}
           <p className="text-sm text-muted">
             &copy; 2025 HookOne. All rights reserved.
           </p>
