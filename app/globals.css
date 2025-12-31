@@ -1,13 +1,28 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
+/* Dark theme (default) */
 :root {
-  --background: #07070a;
-  --foreground: #e4e4e7;
-  --accent: #f59e0b;
-  --accent-dim: #b45309;
-  --surface: #0f0f14;
-  --surface-elevated: #16161d;
-  --border: #27272a;
+  --background: #050507;
+  --foreground: #fafafa;
+  --accent: hsl(38, 92%, 50%);
+  --accent-dim: hsl(32, 95%, 44%);
+  --accent-foreground: #050507;
+  --surface: #0a0a0c;
+  --surface-elevated: #111113;
+  --border: #2d2d33;
+  --muted: #71717a;
+}
+
+/* Light theme */
+.light {
+  --background: #fafafa;
+  --foreground: #0a0a0c;
+  --accent: hsl(38, 92%, 50%);
+  --accent-dim: hsl(38, 95%, 44%);
+  --accent-foreground: #ffffff;
+  --surface: #ffffff;
+  --surface-elevated: #f4f4f5;
+  --border: #e4e4e7;
   --muted: #71717a;
 }
 
@@ -16,12 +31,25 @@
   --color-foreground: var(--foreground);
   --color-accent: var(--accent);
   --color-accent-dim: var(--accent-dim);
+  --color-accent-foreground: var(--accent-foreground);
   --color-surface: var(--surface);
   --color-surface-elevated: var(--surface-elevated);
   --color-border: var(--border);
   --color-muted: var(--muted);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --font-heading: var(--font-heading);
+}
+
+@layer utilities {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading;
+  }
 }
 
 * {
@@ -35,48 +63,105 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-family: var(--font-sans), system-ui, sans-serif;
 }
 
-/* Grid background */
+/* Modern Grid background */
 .grid-bg {
-  background-image:
-    linear-gradient(rgba(245, 158, 11, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(245, 158, 11, 0.03) 1px, transparent 1px);
-  background-size: 60px 60px;
+  background-image: linear-gradient(
+      rgba(245, 158, 11, 0.02) 1px,
+      transparent 1px
+    ),
+    linear-gradient(90deg, rgba(245, 158, 11, 0.02) 1px, transparent 1px);
+  background-size: 80px 80px;
   background-position: center center;
+}
+
+.light .grid-bg {
+  background-image: linear-gradient(
+      rgba(217, 119, 6, 0.04) 1px,
+      transparent 1px
+    ),
+    linear-gradient(90deg, rgba(217, 119, 6, 0.04) 1px, transparent 1px);
 }
 
 /* Gradient mesh background */
 .mesh-gradient {
-  background:
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(245, 158, 11, 0.15), transparent),
-    radial-gradient(ellipse 60% 40% at 80% 50%, rgba(245, 158, 11, 0.05), transparent);
+  background: radial-gradient(
+      ellipse 80% 50% at 50% -20%,
+      rgba(245, 158, 11, 0.12),
+      transparent
+    ),
+    radial-gradient(
+      ellipse 60% 40% at 80% 60%,
+      rgba(245, 158, 11, 0.04),
+      transparent
+    ),
+    radial-gradient(
+      ellipse 40% 30% at 20% 80%,
+      rgba(139, 92, 246, 0.03),
+      transparent
+    );
+}
+
+.light .mesh-gradient {
+  background: radial-gradient(
+      ellipse 80% 50% at 50% -20%,
+      rgba(217, 119, 6, 0.08),
+      transparent
+    ),
+    radial-gradient(
+      ellipse 60% 40% at 80% 60%,
+      rgba(217, 119, 6, 0.03),
+      transparent
+    ),
+    radial-gradient(
+      ellipse 40% 30% at 20% 80%,
+      rgba(139, 92, 246, 0.02),
+      transparent
+    );
 }
 
 /* Glow effects */
 .glow-amber {
-  box-shadow: 0 0 40px -10px rgba(245, 158, 11, 0.4);
+  box-shadow: 0 0 60px -15px rgba(245, 158, 11, 0.35);
 }
 
 .glow-amber-sm {
-  box-shadow: 0 0 20px -5px rgba(245, 158, 11, 0.3);
+  box-shadow: 0 0 30px -8px rgba(245, 158, 11, 0.25);
+}
+
+.light .glow-amber {
+  box-shadow: 0 0 60px -15px rgba(217, 119, 6, 0.25);
+}
+
+.light .glow-amber-sm {
+  box-shadow: 0 0 30px -8px rgba(217, 119, 6, 0.18);
 }
 
 .text-glow {
-  text-shadow: 0 0 30px rgba(245, 158, 11, 0.5);
+  text-shadow: 0 0 40px rgba(245, 158, 11, 0.4);
+}
+
+.light .text-glow {
+  text-shadow: 0 0 40px rgba(217, 119, 6, 0.25);
 }
 
 /* Animations */
 @keyframes pulse-soft {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 @keyframes slide-up {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(24px);
   }
   to {
     opacity: 1;
@@ -87,7 +172,7 @@ body {
 @keyframes slide-in-right {
   from {
     opacity: 0;
-    transform: translateX(20px);
+    transform: translateX(24px);
   }
   to {
     opacity: 1;
@@ -96,36 +181,40 @@ body {
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-}
-
-@keyframes webhook-pulse {
-  0% {
-    transform: scale(1);
-    opacity: 1;
+  0%,
+  100% {
+    transform: translateY(0);
   }
   50% {
-    transform: scale(1.5);
-    opacity: 0;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 0;
+    transform: translateY(-12px);
   }
 }
 
-@keyframes line-flow {
-  0% { stroke-dashoffset: 100; }
-  100% { stroke-dashoffset: 0; }
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes gradient-flow {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
 .animate-slide-up {
-  animation: slide-up 0.6s ease-out forwards;
+  animation: slide-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-slide-in-right {
-  animation: slide-in-right 0.6s ease-out forwards;
+  animation: slide-in-right 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-float {
@@ -136,18 +225,51 @@ body {
   animation: pulse-soft 2s ease-in-out infinite;
 }
 
-/* Stagger delays */
-.delay-100 { animation-delay: 100ms; }
-.delay-200 { animation-delay: 200ms; }
-.delay-300 { animation-delay: 300ms; }
-.delay-400 { animation-delay: 400ms; }
-.delay-500 { animation-delay: 500ms; }
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-flow 3s ease infinite;
+}
+
+/* Stagger delays with cubic-bezier */
+.delay-100 {
+  animation-delay: 100ms;
+}
+.delay-200 {
+  animation-delay: 200ms;
+}
+.delay-300 {
+  animation-delay: 300ms;
+}
+.delay-400 {
+  animation-delay: 400ms;
+}
+.delay-500 {
+  animation-delay: 500ms;
+}
+.delay-600 {
+  animation-delay: 600ms;
+}
 
 /* Code block styling */
 .code-block {
-  background: linear-gradient(180deg, var(--surface-elevated) 0%, var(--surface) 100%);
+  background: linear-gradient(
+    180deg,
+    var(--surface-elevated) 0%,
+    var(--surface) 100%
+  );
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
 }
 
@@ -166,19 +288,42 @@ body {
   border-radius: 50%;
 }
 
-/* Scrollbar */
+/* Glass morphism effect */
+.glass {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.light .glass {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+/* Noise texture overlay */
+.noise::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.02;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Modern Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--surface);
+  background: var(--background);
 }
 
 ::-webkit-scrollbar-thumb {
   background: var(--border);
-  border-radius: 4px;
+  border-radius: 5px;
+  border: 2px solid var(--background);
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -187,6 +332,31 @@ body {
 
 /* Selection */
 ::selection {
-  background: rgba(245, 158, 11, 0.3);
-  color: white;
+  background: rgba(245, 158, 11, 0.25);
+  color: inherit;
+}
+
+.light ::selection {
+  background: rgba(217, 119, 6, 0.2);
+}
+
+/* Focus visible styles */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Smooth transitions for theme changes */
+html {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Disable transitions temporarily during theme switch */
+.disable-transitions,
+.disable-transitions *,
+.disable-transitions *::before,
+.disable-transitions *::after {
+  transition: none !important;
+  transition-property: none !important;
+  transition-duration: 0s !important;
 }
