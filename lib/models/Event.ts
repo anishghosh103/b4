@@ -1,11 +1,12 @@
 import mongoose, { Document, Schema, Types } from 'mongoose';
 
 export interface IEvent extends Document {
-  project: Types.ObjectId;
+  webhook: Types.ObjectId;
   name: string;
   method: 'POST' | 'GET' | 'PUT' | 'PATCH' | 'DELETE';
   payload: any;
   headers: any;
+  queryParams: any;
   responseStatus: number;
   responseBody: any;
   createdAt: Date;
@@ -13,7 +14,7 @@ export interface IEvent extends Document {
 
 const EventSchema = new Schema<IEvent>(
   {
-    project: {
+    webhook: {
       type: Schema.Types.ObjectId,
       required: true,
       ref: 'Webhook',
@@ -25,6 +26,11 @@ const EventSchema = new Schema<IEvent>(
       type: String,
       enum: ['POST', 'GET', 'PUT', 'PATCH', 'DELETE'],
     },
+    payload: { type: Schema.Types.Mixed },
+    headers: { type: Schema.Types.Mixed },
+    queryParams: { type: Schema.Types.Mixed },
+    responseStatus: { type: Number },
+    responseBody: { type: Schema.Types.Mixed },
   },
   { timestamps: true }
 );

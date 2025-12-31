@@ -424,12 +424,6 @@ body {
   background: rgba(217, 119, 6, 0.2);
 }
 
-/* Focus visible styles */
-:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
 /* Smooth transitions for theme changes */
 html {
   transition: background-color 0.3s ease, color 0.3s ease;
