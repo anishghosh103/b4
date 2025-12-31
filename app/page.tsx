@@ -7,6 +7,7 @@ import {
   PlatformLogo,
   PricingCard,
   WaitlistForm,
+  UserMenu,
 } from '@/components/features';
 import { ThemeSwitcher } from '@/components/theme-switcher';
 import { Badge, Button, Card } from '@/components/ui';
@@ -67,15 +68,7 @@ function Navigation() {
 
         <div className="flex items-center gap-3">
           <ThemeSwitcher />
-          <Button
-            onClick={() => {
-              document
-                .getElementById('waitlist')
-                ?.scrollIntoView({ behavior: 'smooth' });
-            }}
-          >
-            Join Waitlist
-          </Button>
+          <UserMenu />
         </div>
       </div>
     </nav>

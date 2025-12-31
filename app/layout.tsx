@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter_Tight, Schibsted_Grotesk, Space_Mono } from 'next/font/google';
+import { SessionProvider } from '@/components/session-provider';
 import './globals.css';
 
 const heading = Inter_Tight({
@@ -57,7 +58,7 @@ export default function RootLayout({
       <body
         className={`${heading.variable} ${body.variable} ${mono.variable} antialiased`}
       >
-        {children}
+        <SessionProvider>{children}</SessionProvider>
       </body>
     </html>
   );

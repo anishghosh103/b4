@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { MongoClient } from "mongodb";
 
 const MONGODB_URI = process.env.MONGODB_URI!;
 
@@ -36,3 +37,8 @@ async function dbConnect(): Promise<typeof mongoose> {
 }
 
 export default dbConnect;
+
+// Export MongoClient promise for NextAuth adapter
+export const clientPromise: Promise<MongoClient> = dbConnect().then(
+  () => mongoose.connection.getClient() as MongoClient
+);
