@@ -963,6 +963,16 @@ function Footer() {
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           <Logo />
+          <div className="text-sm text-muted">
+            Made by{' '}
+            <a
+              href="https://x.com/anishghosh103"
+              target="_blank"
+              className="text-amber-600 dark:text-amber-500 hover:underline hover:underline-offset-2"
+            >
+              @anishghosh103
+            </a>
+          </div>
           {/* <div className="flex items-center gap-8 text-sm text-muted">
             <a
               href="#"
