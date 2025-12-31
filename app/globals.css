@@ -1,20 +1,9 @@
 @import 'tailwindcss';
 
-/* Dark theme (default) */
-:root {
-  --background: #050507;
-  --foreground: #fafafa;
-  --accent: hsl(38, 92%, 50%);
-  --accent-dim: hsl(32, 95%, 44%);
-  --accent-foreground: #050507;
-  --surface: #0a0a0c;
-  --surface-elevated: #111113;
-  --border: #2d2d33;
-  --muted: #71717a;
-}
+@custom-variant dark (&:is(.dark *));
 
-/* Light theme */
-.light {
+/* Light theme (default) */
+:root {
   --background: #fafafa;
   --foreground: #0a0a0c;
   --accent: hsl(38, 92%, 50%);
@@ -24,6 +13,19 @@
   --surface-elevated: #f4f4f5;
   --border: #e4e4e7;
   --muted: #71717a;
+}
+
+/* Dark theme */
+.dark {
+  --background: #050507;
+  --foreground: #fafafa;
+  --accent: hsl(38, 92%, 50%);
+  --accent-dim: hsl(32, 95%, 44%);
+  --accent-foreground: #050507;
+  --surface: #0a0a0c;
+  --surface-elevated: #111113;
+  --border: #2d2d33;
+  --muted: #91919b;
 }
 
 @theme inline {

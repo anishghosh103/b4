@@ -1,8 +1,8 @@
 'use client';
 
-import { type ReactNode } from 'react';
-import { cn } from '@/lib/utils';
 import { Card } from '@/components/ui';
+import { cn } from '@/lib/utils';
+import { type ReactNode } from 'react';
 
 interface FeatureCardProps {
   icon: ReactNode;
@@ -43,14 +43,10 @@ export function FeatureCard({
       </div>
 
       {/* Title */}
-      <h3 className="text-lg font-semibold mb-2.5 text-foreground">
-        {title}
-      </h3>
+      <h3 className="text-lg font-semibold mb-2.5 text-foreground">{title}</h3>
 
       {/* Description */}
-      <p className="text-muted text-sm leading-relaxed">
-        {description}
-      </p>
+      <p className="text-muted text-sm leading-normal">{description}</p>
     </Card>
   );
 }

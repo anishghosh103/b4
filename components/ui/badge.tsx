@@ -21,7 +21,8 @@ function Badge({
 
   const variants = {
     default: 'bg-surface-elevated text-foreground border border-border',
-    accent: 'bg-accent/10 text-accent border border-accent/20',
+    accent:
+      'bg-accent/10 text-accent-dim dark:text-accent border border-accent/20',
     success:
       'bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 border border-emerald-500/20',
     warning: 'bg-amber-500/10 text-amber-400 border border-amber-500/20',

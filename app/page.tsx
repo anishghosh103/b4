@@ -106,7 +106,7 @@ function HeroSection() {
             </h1>
 
             <p
-              className="text-lg text-muted leading-relaxed mb-8 max-w-lg animate-slide-up opacity-0 delay-200"
+              className="text-lg text-muted leading-normal mb-8 max-w-lg animate-slide-up opacity-0 delay-200"
               style={{ animationFillMode: 'forwards' }}
             >
               Get a permanent URL for all your webhooks. Inspect payloads,
