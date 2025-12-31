@@ -927,7 +927,6 @@ function PricingSection() {
               'Team collaboration',
               'Webhook signature verification',
             ]}
-            highlighted
           />
         </div>
       </div>
