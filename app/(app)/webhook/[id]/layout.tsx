@@ -1,15 +1,15 @@
-import { ReactNode } from 'react';
-import { auth } from '@/lib/auth';
-import { redirect, notFound } from 'next/navigation';
-import dbConnect from '@/lib/mongodb';
-import Webhook, { IWebhook } from '@/lib/models/Webhook';
 import { AppHeader, UserMenu } from '@/components/features';
 import { Logo } from '@/components/logo';
 import { ThemeSwitcher } from '@/components/theme-switcher';
-import Link from 'next/link';
+import { auth } from '@/lib/auth';
+import Webhook, { IWebhook } from '@/lib/models/Webhook';
+import dbConnect from '@/lib/mongodb';
 import { cn } from '@/lib/utils';
-import { Activity, Settings, CheckCircle2 } from 'lucide-react';
+import { CheckCircle2, Settings, Zap } from 'lucide-react';
 import { Types } from 'mongoose';
+import Link from 'next/link';
+import { notFound, redirect } from 'next/navigation';
+import { ReactNode } from 'react';
 
 interface WebhookLayoutProps {
   children: ReactNode;
@@ -85,7 +85,7 @@ export default async function WebhookLayout({
                   'bg-accent/10 text-foreground border border-accent/20'
                 )}
               >
-                <Activity className="w-4 h-4" />
+                <Zap className="w-4 h-4" />
                 Events
               </Link>
               <button
