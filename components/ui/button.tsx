@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { forwardRef, type ButtonHTMLAttributes } from 'react';
+import React, { forwardRef, type ButtonHTMLAttributes } from 'react';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'ghost' | 'outline' | 'success';
@@ -47,6 +47,12 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       ),
     };
 
+    let text, icon;
+    React.Children.map(children, (child) => {
+      if (typeof child === 'string') text = child;
+      else icon = child;
+    });
+
     const sizes = {
       sm: 'px-3 py-1.5 text-xs gap-1.5',
       md: 'px-5 py-2.5 text-sm gap-2',
@@ -60,7 +66,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={disabled || isLoading}
         {...props}
       >
-        {isLoading && (
+        {isLoading ? (
           <svg
             className="animate-spin -ml-1 mr-2 h-4 w-4"
             xmlns="http://www.w3.org/2000/svg"
@@ -81,8 +87,10 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
             />
           </svg>
+        ) : (
+          icon
         )}
-        <span className="relative z-10">{children}</span>
+        {text}
       </button>
     );
   }
