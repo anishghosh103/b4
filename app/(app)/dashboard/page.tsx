@@ -1,7 +1,11 @@
+import { AppHeader, UserMenu } from '@/components/features';
+import { Logo } from '@/components/logo';
+import { ThemeSwitcher } from '@/components/theme-switcher';
 import { auth } from '@/lib/auth';
-import { redirect } from 'next/navigation';
-import dbConnect from '@/lib/mongodb';
 import Webhook from '@/lib/models/Webhook';
+import dbConnect from '@/lib/mongodb';
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { DashboardClient } from './dashboard-client';
 
 export default async function DashboardPage() {
@@ -17,8 +21,25 @@ export default async function DashboardPage() {
     .lean();
 
   return (
-    <DashboardClient
-      initialWebhooks={JSON.parse(JSON.stringify(webhooks))}
-    />
+    <>
+      <AppHeader
+        left={
+          <Link href="/dashboard">
+            <Logo />
+          </Link>
+        }
+        right={
+          <>
+            <ThemeSwitcher />
+            <UserMenu />
+          </>
+        }
+      />
+      <main className="max-w-6xl mx-auto px-6 py-8">
+        <DashboardClient
+          initialWebhooks={JSON.parse(JSON.stringify(webhooks))}
+        />
+      </main>
+    </>
   );
 }

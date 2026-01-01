@@ -1,12 +1,8 @@
 import { cn } from '@/lib/utils';
-import Link from 'next/link';
 
 export function Logo({ className }: { className?: string }) {
   return (
-    <Link
-      href="/"
-      className={cn('flex items-center gap-2', className)}
-    >
+    <div className={cn('flex items-center gap-2', className)}>
       <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center">
         <svg
           className="w-5 h-5 text-background"
@@ -23,6 +19,6 @@ export function Logo({ className }: { className?: string }) {
         </svg>
       </div>
       <span className="hidden sm:inline font-semibold text-lg">HookOne</span>
-    </Link>
+    </div>
   );
 }

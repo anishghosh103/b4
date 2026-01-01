@@ -1,3 +1,4 @@
+export { AppHeader } from './app-header';
 export { PlatformLogo } from './platform-logo';
 export { FeatureCard } from './feature-card';
 export { PricingCard } from './pricing-card';

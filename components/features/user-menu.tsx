@@ -1,6 +1,5 @@
-"use client";
+'use client';
 
-import { useSession, signOut } from "next-auth/react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,13 +7,16 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { LoginButton } from "./login-button";
+} from '@/components/ui/dropdown-menu';
+import { signOut, useSession } from 'next-auth/react';
+import { LoginButton } from './login-button';
 
 export function UserMenu() {
   const { data: session, status } = useSession();
 
-  if (status === "loading") {
+  console.log(session);
+
+  if (status === 'loading') {
     return (
       <div className="w-8 h-8 rounded-full bg-surface-elevated animate-pulse" />
     );
@@ -31,18 +33,22 @@ export function UserMenu() {
           {session.user.image ? (
             <img
               src={session.user.image}
-              alt={session.user.name || "User"}
+              alt={session.user.name || 'User'}
               className="w-8 h-8 rounded-full border border-border"
             />
           ) : (
             <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-background text-sm font-medium">
-              {session.user.name?.[0] || session.user.email?.[0] || "U"}
+              {session.user.name?.[0] || session.user.email?.[0] || 'U'}
             </div>
           )}
         </button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent className="w-48" align="end" sideOffset={8}>
+      <DropdownMenuContent
+        className="w-48"
+        align="end"
+        sideOffset={8}
+      >
         <DropdownMenuLabel>
           <p className="font-medium truncate">{session.user.name}</p>
           <p className="text-xs text-muted font-normal truncate">
@@ -50,9 +56,7 @@ export function UserMenu() {
           </p>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onSelect={() => signOut()}>
-          Sign out
-        </DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => signOut()}>Sign out</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
