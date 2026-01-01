@@ -4,12 +4,12 @@ import { ThemeSwitcher } from '@/components/theme-switcher';
 import { auth } from '@/lib/auth';
 import Webhook, { IWebhook } from '@/lib/models/Webhook';
 import dbConnect from '@/lib/mongodb';
-import { cn } from '@/lib/utils';
-import { CheckCircle2, Settings, Zap } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 import { Types } from 'mongoose';
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { ReactNode } from 'react';
+import { WebhookNav } from './webhook-nav';
 
 interface WebhookLayoutProps {
   children: ReactNode;
@@ -76,30 +76,7 @@ export default async function WebhookLayout({
         <div className="flex gap-8">
           {/* Sidebar */}
           <aside className="hidden md:block w-52 shrink-0">
-            <nav className="space-y-1">
-              <Link
-                href={`/webhook/${id}/events`}
-                className={cn(
-                  'flex items-center gap-3 px-4 py-2.5 rounded-lg',
-                  'text-sm font-medium',
-                  'bg-accent/10 text-foreground border border-accent/20'
-                )}
-              >
-                <Zap className="w-4 h-4" />
-                Events
-              </Link>
-              <button
-                disabled
-                className={cn(
-                  'flex items-center gap-3 px-4 py-2.5 rounded-lg w-full',
-                  'text-sm font-medium',
-                  'text-muted cursor-not-allowed opacity-50'
-                )}
-              >
-                <Settings className="w-4 h-4" />
-                Settings
-              </button>
-            </nav>
+            <WebhookNav webhookId={id} />
           </aside>
 
           {/* Main Content */}

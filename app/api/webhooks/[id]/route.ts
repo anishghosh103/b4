@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
-import dbConnect from '@/lib/mongodb';
+import Event from '@/lib/models/Event';
 import Webhook from '@/lib/models/Webhook';
+import dbConnect from '@/lib/mongodb';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function PUT(
   request: NextRequest,
@@ -64,6 +65,8 @@ export async function DELETE(
     if (!webhook) {
       return NextResponse.json({ error: 'Webhook not found' }, { status: 404 });
     }
+
+    await Event.deleteMany({ webhook: id }).lean();
 
     return new NextResponse(null, { status: 204 });
   } catch (error) {
