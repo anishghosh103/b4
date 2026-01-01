@@ -6,12 +6,14 @@ import {
   FeatureCard,
   PlatformLogo,
   PricingCard,
-  WaitlistForm,
   UserMenu,
+  WaitlistForm,
 } from '@/components/features';
 import { ThemeSwitcher } from '@/components/theme-switcher';
 import { Badge, Button, Card } from '@/components/ui';
 import { cn } from '@/lib/utils';
+import { useSession } from 'next-auth/react';
+import Link from 'next/link';
 import { useState } from 'react';
 
 // Logo component
@@ -33,13 +35,14 @@ function Logo({ className }: { className?: string }) {
           />
         </svg>
       </div>
-      <span className="font-semibold text-lg">HookOne</span>
+      <span className="hidden sm:inline font-semibold text-lg">HookOne</span>
     </div>
   );
 }
 
 // Navigation component
 function Navigation() {
+  const { data: session } = useSession();
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/70 backdrop-blur-xl">
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
@@ -66,9 +69,21 @@ function Navigation() {
           </a>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <ThemeSwitcher />
-          <UserMenu />
+          {session?.user ? (
+            <Link href="/dashboard">
+              <Button
+                variant="outline"
+                size="sm"
+              >
+                Dashboard
+              </Button>
+            </Link>
+          ) : null}
+          <div className="ml-2">
+            <UserMenu />
+          </div>
         </div>
       </div>
     </nav>
@@ -516,9 +531,9 @@ function DashboardSection() {
                         }
                       }}
                       className={cn(
-                        'w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm transition-all duration-200',
+                        'w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200',
                         dashboardView === item.key
-                          ? 'bg-accent/10 text-accent'
+                          ? 'bg-accent/10 text-amber-600'
                           : 'text-muted hover:bg-surface-elevated hover:text-foreground'
                       )}
                     >

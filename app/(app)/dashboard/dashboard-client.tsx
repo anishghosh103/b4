@@ -1,6 +1,5 @@
 'use client';
 
-import { UserMenu } from '@/components/features';
 import {
   DeleteConfirmDialog,
   EmptyState,
@@ -8,35 +7,9 @@ import {
   WebhookFormDialog,
 } from '@/components/features';
 import type { WebhookData } from '@/components/features/webhook-card';
-import { ThemeSwitcher } from '@/components/theme-switcher';
 import { Button } from '@/components/ui';
-import { cn } from '@/lib/utils';
 import { PlusIcon } from 'lucide-react';
-import Link from 'next/link';
 import { useState } from 'react';
-
-function Logo({ className }: { className?: string }) {
-  return (
-    <Link href="/" className={cn('flex items-center gap-2', className)}>
-      <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center">
-        <svg
-          className="w-5 h-5 text-background"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M13 10V3L4 14h7v7l9-11h-7z"
-          />
-        </svg>
-      </div>
-      <span className="font-semibold text-lg">HookOne</span>
-    </Link>
-  );
-}
 
 interface DashboardClientProps {
   initialWebhooks: WebhookData[];
@@ -45,8 +18,12 @@ interface DashboardClientProps {
 export function DashboardClient({ initialWebhooks }: DashboardClientProps) {
   const [webhooks, setWebhooks] = useState<WebhookData[]>(initialWebhooks);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [editingWebhook, setEditingWebhook] = useState<WebhookData | null>(null);
-  const [deletingWebhook, setDeletingWebhook] = useState<WebhookData | null>(null);
+  const [editingWebhook, setEditingWebhook] = useState<WebhookData | null>(
+    null
+  );
+  const [deletingWebhook, setDeletingWebhook] = useState<WebhookData | null>(
+    null
+  );
 
   const handleCreate = async (name: string) => {
     const response = await fetch('/api/webhooks', {
@@ -109,50 +86,37 @@ export function DashboardClient({ initialWebhooks }: DashboardClientProps) {
   };
 
   return (
-    <div className="min-h-screen bg-background grid-bg mesh-gradient">
-      {/* Header */}
-      <header className="border-b border-border/50 bg-background/70 backdrop-blur-xl">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Logo />
-          <div className="flex items-center gap-3">
-            <ThemeSwitcher />
-            <UserMenu />
-          </div>
+    <>
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Webhooks</h1>
+          <p className="text-muted mt-1">Manage your webhook endpoints</p>
         </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-6 py-8">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">Webhooks</h1>
-            <p className="text-muted mt-1">
-              Manage your webhook endpoints
-            </p>
-          </div>
-          {webhooks.length > 0 && (
-            <Button variant="primary" onClick={() => setIsFormOpen(true)}>
-              <PlusIcon className="size-4" />
-              Create Webhook
-            </Button>
-          )}
-        </div>
-
-        {webhooks.length === 0 ? (
-          <EmptyState onCreateClick={() => setIsFormOpen(true)} />
-        ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {webhooks.map((webhook) => (
-              <WebhookCard
-                key={webhook._id}
-                webhook={webhook}
-                onEdit={openEditDialog}
-                onDelete={openDeleteDialog}
-              />
-            ))}
-          </div>
+        {webhooks.length > 0 && (
+          <Button
+            variant="primary"
+            onClick={() => setIsFormOpen(true)}
+          >
+            <PlusIcon className="size-4" />
+            Create Webhook
+          </Button>
         )}
-      </main>
+      </div>
+
+      {webhooks.length === 0 ? (
+        <EmptyState onCreateClick={() => setIsFormOpen(true)} />
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {webhooks.map((webhook) => (
+            <WebhookCard
+              key={webhook._id}
+              webhook={webhook}
+              onEdit={openEditDialog}
+              onDelete={openDeleteDialog}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Create Dialog */}
       <WebhookFormDialog
@@ -176,6 +140,6 @@ export function DashboardClient({ initialWebhooks }: DashboardClientProps) {
         webhookName={deletingWebhook?.name || ''}
         onConfirm={handleDelete}
       />
-    </div>
+    </>
   );
 }

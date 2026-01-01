@@ -11,8 +11,8 @@ whenever the webhook url is called, we store the query parameter, payload, heade
 
 socket connection will be handled using a tiny server
 
-⬜️ authentication - just google for now
-⬜️ webhook url creation
+✅ authentication - just google for now
+✅ webhook url creation
 ⬜️ cli package
 ⬜️ event relaying and storage
 ⬜️ subscriptions
