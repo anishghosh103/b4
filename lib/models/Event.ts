@@ -1,8 +1,11 @@
 import mongoose, { Document, Schema, Types } from 'mongoose';
 
+export type Platform = 'stripe' | 'github' | 'docusign' | 'dodo' | 'unknown';
+
 export interface IEvent extends Document {
   webhook: Types.ObjectId;
   name: string;
+  platform: Platform;
   method: 'POST' | 'GET' | 'PUT' | 'PATCH' | 'DELETE';
   payload: any;
   headers: any;
@@ -21,6 +24,11 @@ const EventSchema = new Schema<IEvent>(
     },
     name: {
       type: String,
+    },
+    platform: {
+      type: String,
+      enum: ['stripe', 'github', 'docusign', 'dodo', 'unknown'],
+      default: 'unknown',
     },
     method: {
       type: String,

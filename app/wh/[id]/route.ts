@@ -3,6 +3,7 @@ import dbConnect from '@/lib/mongodb';
 import Webhook, { IWebhook } from '@/lib/models/Webhook';
 import Event from '@/lib/models/Event';
 import { Types } from 'mongoose';
+import { detectPlatformAndEvent } from '@/lib/utils/platform-detector';
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
@@ -71,10 +72,14 @@ async function handleWebhookRequest(
       }
     }
 
+    // Detect platform and extract event name
+    const { platform, eventName } = detectPlatformAndEvent(headers, payload);
+
     // Create event record
     const event = await Event.create({
       webhook: webhook._id,
-      name: '',
+      name: eventName || '',
+      platform,
       method,
       payload,
       headers,

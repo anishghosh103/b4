@@ -42,7 +42,6 @@ export default async function WebhookEventsPage({
   return (
     <EventsClient
       webhookId={id}
-      webhookName={webhook.name}
       initialEvents={JSON.parse(JSON.stringify(events))}
     />
   );

@@ -378,31 +378,31 @@ function DashboardSection() {
   const events = [
     {
       event: 'payment_intent.succeeded',
-      source: 'Stripe',
+      platform: 'stripe' as const,
       time: '2s ago',
       status: 'success' as const,
     },
     {
       event: 'envelope-completed',
-      source: 'DocuSign',
+      platform: 'docusign' as const,
       time: '1m ago',
       status: 'success' as const,
     },
     {
       event: 'payment.succeeded',
-      source: 'Dodo',
+      platform: 'dodo' as const,
       time: '5m ago',
       status: 'success' as const,
     },
     {
       event: 'pull_request.opened',
-      source: 'GitHub',
+      platform: 'github' as const,
       time: '12m ago',
       status: 'success' as const,
     },
     {
       event: 'payment_intent.payment_failed',
-      source: 'Stripe',
+      platform: 'stripe' as const,
       time: '1h ago',
       status: 'error' as const,
     },

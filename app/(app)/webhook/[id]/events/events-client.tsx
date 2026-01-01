@@ -4,22 +4,42 @@ import { DashboardEvent } from '@/components/features';
 import { formatRelativeTime } from '@/lib/utils';
 import { Inbox } from 'lucide-react';
 
+type Platform = 'stripe' | 'github' | 'docusign' | 'dodo' | 'unknown';
+
 interface EventData {
   _id: string;
   name?: string;
+  platform?: Platform;
   method: 'POST' | 'GET' | 'PUT' | 'PATCH' | 'DELETE';
+  payload?: any;
   responseStatus: number;
   createdAt: string;
 }
 
+function getEventDisplayName(event: EventData): string {
+  // If we have an event name, use it
+  if (event.name) return event.name;
+
+  // For unknown platforms, show truncated payload
+  if (event.platform === 'unknown' && event.payload) {
+    const str = typeof event.payload === 'string'
+      ? event.payload
+      : JSON.stringify(event.payload);
+    if (str && str !== '{}' && str !== '[]' && str !== 'null') {
+      return str.length > 50 ? str.substring(0, 50) + '...' : str;
+    }
+  }
+
+  // Fallback to method
+  return event.method;
+}
+
 interface EventsClientProps {
   webhookId: string;
-  webhookName: string;
   initialEvents: EventData[];
 }
 
 export function EventsClient({
-  webhookName,
   initialEvents,
 }: EventsClientProps) {
   if (initialEvents.length === 0) {
@@ -48,8 +68,8 @@ export function EventsClient({
         {initialEvents.map((event) => (
           <DashboardEvent
             key={event._id}
-            event={event.name || event.method}
-            source={webhookName}
+            event={getEventDisplayName(event)}
+            platform={event.platform || 'unknown'}
             time={formatRelativeTime(event.createdAt)}
             status={event.responseStatus < 400 ? 'success' : 'error'}
           />

@@ -107,16 +107,34 @@ export function EventStream() {
 }
 
 // Dashboard event list item (non-animated version for dashboard)
+type Platform = 'stripe' | 'github' | 'docusign' | 'dodo' | 'unknown';
+
 interface DashboardEventProps {
   event: string;
-  source: string;
+  platform: Platform;
   time: string;
   status: 'success' | 'error';
 }
 
+const platformColors: Record<Platform, string> = {
+  stripe: 'bg-violet-500/10 text-violet-600 border-violet-500/20',
+  github: 'bg-zinc-500/10 text-zinc-600 border-zinc-500/20',
+  docusign: 'bg-yellow-500/10 text-yellow-600 border-yellow-500/20',
+  dodo: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
+  unknown: 'bg-zinc-500/10 text-zinc-500 border-zinc-500/20',
+};
+
+const platformLabels: Record<Platform, string> = {
+  stripe: 'Stripe',
+  github: 'GitHub',
+  docusign: 'DocuSign',
+  dodo: 'Dodo',
+  unknown: 'Unknown',
+};
+
 export function DashboardEvent({
   event,
-  source,
+  platform,
   time,
   status,
 }: DashboardEventProps) {
@@ -142,9 +160,14 @@ export function DashboardEvent({
         {event}
       </span>
 
-      {/* Source */}
-      <span className="text-xs text-muted px-2 py-1 rounded-md bg-surface border border-border">
-        {source}
+      {/* Platform badge */}
+      <span
+        className={cn(
+          'text-xs font-medium px-2.5 py-1 rounded-md border',
+          platformColors[platform]
+        )}
+      >
+        {platformLabels[platform]}
       </span>
 
       {/* Time */}
