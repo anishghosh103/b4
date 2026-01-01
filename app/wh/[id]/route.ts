@@ -4,6 +4,7 @@ import Webhook, { IWebhook } from '@/lib/models/Webhook';
 import Event from '@/lib/models/Event';
 import { Types } from 'mongoose';
 import { detectPlatformAndEvent } from '@/lib/utils/platform-detector';
+import { forwardWebhookToServer } from '@/lib/webhook-forwarder';
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
@@ -86,6 +87,17 @@ async function handleWebhookRequest(
       queryParams,
       responseStatus: 200,
       responseBody: { received: true },
+    });
+
+    // Forward to WebSocket server for CLI (fire and forget)
+    forwardWebhookToServer({
+      webhookId: id,
+      method,
+      headers,
+      body: payload,
+      queryParams,
+    }).catch((err) => {
+      console.error('Webhook forwarding failed:', err);
     });
 
     return NextResponse.json(
