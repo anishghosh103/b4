@@ -9,12 +9,11 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { signOut, useSession } from 'next-auth/react';
+import Link from 'next/link';
 import { LoginButton } from './login-button';
 
 export function UserMenu() {
   const { data: session, status } = useSession();
-
-  console.log(session);
 
   if (status === 'loading') {
     return (
@@ -56,6 +55,9 @@ export function UserMenu() {
           </p>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link href="/settings/subscription">Subscription</Link>
+        </DropdownMenuItem>
         <DropdownMenuItem onSelect={() => signOut()}>Sign out</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -11,6 +11,7 @@ import {
 } from '@/components/features';
 import { ThemeSwitcher } from '@/components/theme-switcher';
 import { Badge, Button, Card } from '@/components/ui';
+import { PRICING_TIERS } from '@/lib/constants/pricing';
 import { cn } from '@/lib/utils';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
@@ -911,30 +912,18 @@ function PricingSection() {
 
         <div className="grid md:grid-cols-2 gap-8">
           <PricingCard
-            tier="Free"
+            tier={PRICING_TIERS.free.name}
             price="Free"
-            description="Perfect for side projects and learning"
-            features={[
-              '1 permanent webhook URL',
-              '1,000 events / month',
-              '7-day event history',
-              'CLI localhost relay',
-              '3 mock workflows',
-            ]}
+            description={PRICING_TIERS.free.description}
+            features={[...PRICING_TIERS.free.features]}
           />
           <PricingCard
-            tier="Pro"
+            tier={PRICING_TIERS.pro.name}
             price="$12"
-            description="For professional developers and teams"
-            features={[
-              'Unlimited webhook URLs',
-              'Unlimited events',
-              '30-day event history',
-              'Priority localhost relay',
-              'All mock workflows',
-              'Team collaboration',
-              'Webhook signature verification',
-            ]}
+            description={PRICING_TIERS.pro.description}
+            features={[...PRICING_TIERS.pro.features]}
+            highlighted
+            highlightedText="Recommended"
           />
         </div>
       </div>

@@ -4,6 +4,7 @@ import dbConnect from '@/lib/mongodb';
 import Webhook, { IWebhook } from '@/lib/models/Webhook';
 import Event from '@/lib/models/Event';
 import { Types } from 'mongoose';
+import { getEventRetentionDays } from '@/lib/services/subscriptionService';
 
 export async function GET(
   request: NextRequest,
@@ -29,8 +30,17 @@ export async function GET(
       return NextResponse.json({ error: 'Webhook not found' }, { status: 404 });
     }
 
-    // Fetch events for this webhook
-    const events = await Event.find({ webhook: webhook._id })
+    // Get retention period based on user's tier
+    const retentionDays = await getEventRetentionDays(session.user.id);
+    const cutoffDate = new Date(
+      Date.now() - retentionDays * 24 * 60 * 60 * 1000
+    );
+
+    // Fetch events within retention period
+    const events = await Event.find({
+      webhook: webhook._id,
+      createdAt: { $gte: cutoffDate },
+    })
       .sort({ createdAt: -1 })
       .limit(100)
       .lean();
@@ -38,6 +48,7 @@ export async function GET(
     return NextResponse.json({
       events,
       webhookName: webhook.name,
+      retentionDays,
     });
   } catch (error) {
     console.error('Error fetching events:', error);

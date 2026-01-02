@@ -1,10 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
-import dbConnect from '@/lib/mongodb';
-import Webhook, { IWebhook } from '@/lib/models/Webhook';
 import Event from '@/lib/models/Event';
-import { Types } from 'mongoose';
+import Webhook, { IWebhook } from '@/lib/models/Webhook';
+import dbConnect from '@/lib/mongodb';
+import { canReceiveEvent } from '@/lib/services/subscriptionService';
 import { detectPlatformAndEvent } from '@/lib/utils/platform-detector';
 import { forwardWebhookToServer } from '@/lib/webhook-forwarder';
+import { Types } from 'mongoose';
+import { NextRequest, NextResponse } from 'next/server';
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
@@ -26,6 +27,27 @@ async function handleWebhookRequest(
     if (!webhook) {
       return NextResponse.json({ error: 'Webhook not found' }, { status: 404 });
     }
+
+    // Check event limit for the webhook owner
+    const eventCheck = await canReceiveEvent(webhook.userId);
+    if (!eventCheck.allowed) {
+      return NextResponse.json(
+        {
+          error: 'Monthly event limit exceeded',
+          code: 'EVENT_LIMIT_EXCEEDED',
+          details: {
+            current: eventCheck.current,
+            limit: eventCheck.limit,
+            tier: eventCheck.tier,
+            status: eventCheck.status,
+          },
+        },
+        { status: 429 }
+      );
+    }
+
+    // Track if this event is over quota (in grace period)
+    const isOverQuota = eventCheck.status === 'grace_period';
 
     // Extract headers (convert Headers to plain object)
     const headers: Record<string, string> = {};
@@ -78,6 +100,7 @@ async function handleWebhookRequest(
 
     // Create event record
     const event = await Event.create({
+      user: webhook.userId,
       webhook: webhook._id,
       name: eventName || '',
       platform,
@@ -87,6 +110,7 @@ async function handleWebhookRequest(
       queryParams,
       responseStatus: 200,
       responseBody: { received: true },
+      overQuota: isOverQuota,
     });
 
     // Forward to WebSocket server for CLI (fire and forget)

@@ -2,6 +2,7 @@
 
 import { Button, Card } from '@/components/ui';
 import { cn } from '@/lib/utils';
+import { ReactNode } from 'react';
 
 interface PricingCardProps {
   tier: string;
@@ -9,7 +10,11 @@ interface PricingCardProps {
   description: string;
   features: string[];
   highlighted?: boolean;
+  highlightedText?: string;
   className?: string;
+  actionContent?: ReactNode;
+  isLoading?: boolean;
+  onClick?: () => void;
 }
 
 export function PricingCard({
@@ -18,21 +23,26 @@ export function PricingCard({
   description,
   features,
   highlighted = false,
+  highlightedText = 'Popular',
   className,
+  actionContent = 'Get Started',
+  isLoading,
+  onClick,
 }: PricingCardProps) {
   return (
     <Card
       className={cn(
         'relative flex flex-col p-8',
-        highlighted && 'border-accent/50 glow-amber-sm',
-        !highlighted && 'hover:border-accent/20',
+        highlighted && 'border-accent/50 ring-1 ring-accent/50',
+        !highlighted &&
+          'hover:border-accent/20 hover:ring-1 hover:ring-accent/20',
         className
       )}
     >
       {/* Popular badge */}
       {highlighted && (
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-accent text-background text-xs font-medium rounded-full">
-          Popular
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-accent text-accent-foreground text-xs font-medium rounded-full">
+          {highlightedText || 'Popular'}
         </div>
       )}
 
@@ -76,13 +86,11 @@ export function PricingCard({
         variant={highlighted ? 'primary' : 'secondary'}
         size="lg"
         className="w-full rounded-lg"
-        onClick={() => {
-          document
-            .getElementById('waitlist')
-            ?.scrollIntoView({ behavior: 'smooth' });
-        }}
+        onClick={onClick}
+        isLoading={isLoading}
+        disabled={isLoading}
       >
-        Join Waitlist
+        {actionContent}
       </Button>
     </Card>
   );
