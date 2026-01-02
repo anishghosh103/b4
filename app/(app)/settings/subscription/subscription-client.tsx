@@ -137,13 +137,23 @@ export function SubscriptionClient({
             highlighted
             highlightedText="Recommended"
             actionContent={
-              <>
-                <Zap /> Upgrade to Pro
-              </>
+              currentTier === 'pro' ? (
+                'Already subscribed'
+              ) : (
+                <>
+                  <Zap /> Upgrade to Pro
+                </>
+              )
             }
             className="max-w-100 mx-auto"
             onClick={() => handleSelectPlan('pro')}
-            isLoading={loadingTier === 'pro'}
+            status={
+              loadingTier === 'pro'
+                ? 'loading'
+                : currentTier === 'pro'
+                ? 'subscribed'
+                : 'default'
+            }
           />
         </Tilt>
       )}

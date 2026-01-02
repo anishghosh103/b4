@@ -7,13 +7,12 @@ import {
   PlatformLogo,
   PricingCard,
   UserMenu,
-  WaitlistForm,
 } from '@/components/features';
 import { ThemeSwitcher } from '@/components/theme-switcher';
 import { Badge, Button, Card } from '@/components/ui';
 import { PRICING_TIERS } from '@/lib/constants/pricing';
 import { cn } from '@/lib/utils';
-import { useSession } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useState } from 'react';
 
@@ -93,6 +92,8 @@ function Navigation() {
 
 // Hero Section
 function HeroSection() {
+  const { data: session } = useSession();
+
   return (
     <section className="pt-36 pb-24 px-6">
       <div className="max-w-6xl mx-auto">
@@ -124,10 +125,21 @@ function HeroSection() {
             </p>
 
             <div
-              className="mb-8 animate-slide-up opacity-0 delay-300 max-w-md"
+              className="animate-slide-up opacity-0 delay-300"
               style={{ animationFillMode: 'forwards' }}
             >
-              <WaitlistForm />
+              {session?.user ? (
+                <Link href="/dashboard">
+                  <Button size="lg">Go to Dashboard</Button>
+                </Link>
+              ) : (
+                <Button
+                  size="lg"
+                  onClick={() => signIn('google')}
+                >
+                  Get started for free
+                </Button>
+              )}
             </div>
           </div>
 
@@ -895,6 +907,52 @@ function MockWorkflowsSection() {
 
 // Pricing Section
 function PricingSection() {
+  const { data: session } = useSession();
+  const [loading, setLoading] = useState<string | null>(null);
+
+  const handleGetStarted = async (tier: string) => {
+    if (tier === 'free') {
+      if (session?.user) {
+        window.location.href = '/dashboard';
+      } else {
+        signIn('google', { callbackUrl: '/dashboard' });
+      }
+      return;
+    }
+
+    if (!session?.user) {
+      signIn('google', { callbackUrl: '/checkout?tier=pro' });
+      return;
+    }
+
+    setLoading(tier);
+    try {
+      const usageRes = await fetch('/api/subscription/usage');
+      const usageData = await usageRes.json();
+
+      if (usageData.data?.tier === 'pro') {
+        window.location.href = '/dashboard';
+        return;
+      }
+
+      const response = await fetch('/api/payments/init', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tier: 'pro',
+          successUrl: `${window.location.origin}/settings/subscription`,
+        }),
+      });
+      const res = await response.json();
+      if (res.data?.checkoutUrl) {
+        window.location.href = res.data.checkoutUrl;
+      }
+    } catch (err) {
+      console.error('Payment init failed:', err);
+      setLoading(null);
+    }
+  };
+
   return (
     <section
       id="pricing"
@@ -916,6 +974,8 @@ function PricingSection() {
             price="Free"
             description={PRICING_TIERS.free.description}
             features={[...PRICING_TIERS.free.features]}
+            onClick={() => handleGetStarted('free')}
+            status={loading === 'free' ? 'loading' : 'default'}
           />
           <PricingCard
             tier={PRICING_TIERS.pro.name}
@@ -924,6 +984,8 @@ function PricingSection() {
             features={[...PRICING_TIERS.pro.features]}
             highlighted
             highlightedText="Recommended"
+            onClick={() => handleGetStarted('pro')}
+            status={loading === 'pro' ? 'loading' : 'default'}
           />
         </div>
       </div>
@@ -933,9 +995,11 @@ function PricingSection() {
 
 // CTA Section
 function CTASection() {
+  const { data: session } = useSession();
+
   return (
     <section
-      id="waitlist"
+      id="cta"
       className="py-28 px-6 border-t border-border/30"
     >
       <div className="max-w-3xl mx-auto text-center">
@@ -943,11 +1007,20 @@ function CTASection() {
           Ready to simplify your webhook testing?
         </h2>
         <p className="text-muted mb-10 text-lg">
-          Join the waitlist to get early access. No credit card required.
+          Get started today. No credit card required.
         </p>
-        <div className="max-w-lg mx-auto">
-          <WaitlistForm variant="large" />
-        </div>
+        {session?.user ? (
+          <Link href="/dashboard">
+            <Button size="lg">Go to Dashboard</Button>
+          </Link>
+        ) : (
+          <Button
+            size="lg"
+            onClick={() => signIn('google')}
+          >
+            Get started for free
+          </Button>
+        )}
       </div>
     </section>
   );

@@ -1,7 +1,6 @@
 import { getUserUsageSnapshot } from '@/lib/services/subscriptionService';
 import { requireAuth } from '@/lib/utils/authHelpers';
-import { asyncHandler } from '@/lib/utils/controllerHelpers';
-import { NextResponse } from 'next/server';
+import { asyncHandler, successResponse } from '@/lib/utils/controllerHelpers';
 
 /**
  * GET /api/subscription/usage
@@ -10,6 +9,6 @@ import { NextResponse } from 'next/server';
 export const GET = asyncHandler(
   requireAuth(async (req, user) => {
     const usage = await getUserUsageSnapshot(user._id);
-    return NextResponse.json(usage);
+    return successResponse(usage);
   })
 );

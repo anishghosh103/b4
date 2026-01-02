@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
 import type {
-  UsageSnapshot,
   EventCheckStatus,
+  UsageSnapshot,
 } from '@/lib/services/subscriptionService';
+import { useCallback, useEffect, useState } from 'react';
 
 interface UseSubscriptionReturn {
   usage: UsageSnapshot | null;
@@ -35,8 +35,8 @@ export function useSubscription(): UseSubscriptionReturn {
         throw new Error('Failed to fetch usage');
       }
 
-      const data = await response.json();
-      setUsage(data);
+      const res = await response.json();
+      setUsage(res.data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {

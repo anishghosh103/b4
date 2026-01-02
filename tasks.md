@@ -24,7 +24,7 @@ socket connection will be handled using a tiny server
 ✅ webhook url creation
 ✅ cli package
 ✅ event relaying and storage
-⬜️ subscriptions
+✅ subscriptions
 ⬜️ workflows
 ⬜️ deployment
 

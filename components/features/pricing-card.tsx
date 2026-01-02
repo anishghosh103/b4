@@ -13,7 +13,7 @@ interface PricingCardProps {
   highlightedText?: string;
   className?: string;
   actionContent?: ReactNode;
-  isLoading?: boolean;
+  status?: 'disabled' | 'loading' | 'subscribed' | 'default';
   onClick?: () => void;
 }
 
@@ -26,7 +26,7 @@ export function PricingCard({
   highlightedText = 'Popular',
   className,
   actionContent = 'Get Started',
-  isLoading,
+  status,
   onClick,
 }: PricingCardProps) {
   return (
@@ -85,12 +85,16 @@ export function PricingCard({
       <Button
         variant={highlighted ? 'primary' : 'secondary'}
         size="lg"
-        className="w-full rounded-lg"
+        className={cn(
+          'w-full rounded-lg',
+          status === 'disabled' ? 'bg-gray-200 text-gray-600' : '',
+          status === 'subscribed' ? 'bg-red-500 text-white' : ''
+        )}
         onClick={onClick}
-        isLoading={isLoading}
-        disabled={isLoading}
+        disabled={status === 'disabled' || status === 'loading'}
+        isLoading={status === 'loading'}
       >
-        {actionContent}
+        {status === 'subscribed' ? 'Unsubscribe' : actionContent}
       </Button>
     </Card>
   );

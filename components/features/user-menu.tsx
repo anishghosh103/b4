@@ -58,6 +58,7 @@ export function UserMenu() {
         <DropdownMenuItem asChild>
           <Link href="/settings/subscription">Subscription</Link>
         </DropdownMenuItem>
+        <DropdownMenuSeparator />
         <DropdownMenuItem onSelect={() => signOut()}>Sign out</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
