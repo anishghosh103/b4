@@ -2,6 +2,14 @@
 
 import { PricingCard } from '@/components/features/pricing-card';
 import { Badge, Button, Card } from '@/components/ui';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Tilt } from '@/components/ui/tilt';
 import { PRICING_TIERS } from '@/lib/constants/pricing';
 import { cn } from '@/lib/utils';
@@ -28,15 +36,22 @@ interface SubscriptionClientProps {
   pricingConfigs: PricingConfig[];
   currentTier: string;
   hasPendingPayment: boolean;
+  currentPeriodEnd: string | null;
+  cancelAtPeriodEnd: boolean;
 }
 
 export function SubscriptionClient({
   pricingConfigs,
   currentTier,
   hasPendingPayment,
+  currentPeriodEnd,
+  cancelAtPeriodEnd,
 }: SubscriptionClientProps) {
   const [loadingTier, setLoadingTier] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [cancelSuccess, setCancelSuccess] = useState(cancelAtPeriodEnd);
 
   const proConfig = pricingConfigs.find((c) => c.tier === 'pro');
   const freeConfig = pricingConfigs.find((c) => c.tier === 'free');
@@ -82,6 +97,42 @@ export function SubscriptionClient({
     }
   };
 
+  const handleCancelSubscription = async () => {
+    setIsCancelling(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/subscription/cancel', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const res = await response.json();
+
+      if (!response.ok) {
+        throw new Error(res.error || 'Failed to cancel subscription');
+      }
+
+      setCancelSuccess(true);
+      setShowCancelDialog(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong');
+    } finally {
+      setIsCancelling(false);
+    }
+  };
+
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return '';
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  };
+
   const isProCurrent = currentTier === 'pro';
   const isFreeCurrent = currentTier === 'free';
 
@@ -98,21 +149,38 @@ export function SubscriptionClient({
       </div>
 
       {/* Current Status */}
-      <div className="flex items-center justify-center gap-3">
-        <span className="text-sm text-muted">Current plan:</span>
-        <Badge
-          variant={isProCurrent ? 'accent' : 'default'}
-          className="capitalize"
-        >
-          {currentTier}
-        </Badge>
-        {hasPendingPayment && (
+      <div className="flex flex-col items-center gap-3">
+        <div className="flex items-center gap-3">
+          <span className="text-sm text-muted">Current plan:</span>
           <Badge
-            variant="warning"
-            pulse
+            variant={isProCurrent ? 'accent' : 'default'}
+            className="capitalize"
           >
-            Payment Processing
+            {currentTier}
           </Badge>
+          {hasPendingPayment && (
+            <Badge
+              variant="warning"
+              pulse
+            >
+              Payment Processing
+            </Badge>
+          )}
+        </div>
+        {isProCurrent && cancelSuccess && currentPeriodEnd && (
+          <Badge variant="warning">
+            Subscription ends on {formatDate(currentPeriodEnd)}
+          </Badge>
+        )}
+        {isProCurrent && !cancelSuccess && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-muted hover:text-red-400 text-xs"
+            onClick={() => setShowCancelDialog(true)}
+          >
+            Cancel subscription
+          </Button>
         )}
       </div>
 
@@ -146,7 +214,11 @@ export function SubscriptionClient({
               )
             }
             className="max-w-100 mx-auto"
-            onClick={() => handleSelectPlan('pro')}
+            onClick={() =>
+              isProCurrent && !cancelSuccess
+                ? setShowCancelDialog(true)
+                : handleSelectPlan('pro')
+            }
             status={
               loadingTier === 'pro'
                 ? 'loading'
@@ -249,6 +321,54 @@ export function SubscriptionClient({
           Contact support
         </a>
       </p> */}
+
+      {/* Cancel Subscription Dialog */}
+      <Dialog
+        open={showCancelDialog}
+        onOpenChange={setShowCancelDialog}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Cancel Subscription</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to cancel your Pro subscription?
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4 space-y-3">
+            <p className="text-sm text-muted">
+              You&apos;ll lose access to Pro features including:
+            </p>
+            <ul className="text-sm text-muted list-disc list-inside space-y-1">
+              <li>Unlimited webhooks</li>
+              <li>Unlimited events</li>
+              <li>30-day event retention</li>
+              <li>Priority support</li>
+            </ul>
+            {currentPeriodEnd && (
+              <p className="text-sm font-medium text-foreground mt-4">
+                Your access will end on {formatDate(currentPeriodEnd)}
+              </p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button
+              variant="ghost"
+              onClick={() => setShowCancelDialog(false)}
+              disabled={isCancelling}
+            >
+              Keep Subscription
+            </Button>
+            <Button
+              variant="primary"
+              className="bg-red-500 hover:bg-red-600"
+              onClick={handleCancelSubscription}
+              isLoading={isCancelling}
+            >
+              Cancel Subscription
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

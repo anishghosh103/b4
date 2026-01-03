@@ -43,6 +43,10 @@ export interface WebhookEvent {
     currency: string;
     status: string;
     metadata: { paymentId: string };
+    // Billing cycle dates
+    previous_billing_date?: string;
+    next_billing_date?: string;
+    cancelled_at?: string;
   };
   timestamp: string;
 }
@@ -151,6 +155,10 @@ export function parseWebhookEvent(payload: string): WebhookEvent {
         currency: event.data.currency,
         status: event.data.status,
         metadata: event.data.metadata || {},
+        // Billing cycle dates
+        previous_billing_date: event.data.previous_billing_date,
+        next_billing_date: event.data.next_billing_date,
+        cancelled_at: event.data.cancelled_at,
       },
       timestamp: event.timestamp || new Date().toISOString(),
     };
@@ -226,6 +234,74 @@ export async function cancelCheckoutSession(sessionId: string): Promise<void> {
     throw new ServiceError(
       'Dodo Payments',
       `Failed to cancel checkout session: ${
+        error instanceof Error ? error.message : 'Unknown error'
+      }`
+    );
+  }
+}
+
+/**
+ * Cancel a subscription at the end of the current billing period
+ */
+export async function cancelSubscription(subscriptionId: string): Promise<{
+  next_billing_date: string;
+  cancel_at_next_billing_date: boolean;
+}> {
+  if (!DODO_API_KEY) {
+    throw new ServiceError('Dodo Payments', 'API key not configured');
+  }
+
+  try {
+    const subscription = await client.subscriptions.update(subscriptionId, {
+      cancel_at_next_billing_date: true,
+    });
+
+    return {
+      next_billing_date: subscription.next_billing_date,
+      cancel_at_next_billing_date: subscription.cancel_at_next_billing_date,
+    };
+  } catch (error) {
+    console.error('Error canceling subscription:', error);
+    throw new ServiceError(
+      'Dodo Payments',
+      `Failed to cancel subscription: ${
+        error instanceof Error ? error.message : 'Unknown error'
+      }`
+    );
+  }
+}
+
+/**
+ * Get subscription details
+ */
+export async function getSubscription(subscriptionId: string): Promise<{
+  subscription_id: string;
+  status: string;
+  previous_billing_date: string;
+  next_billing_date: string;
+  cancel_at_next_billing_date: boolean;
+  cancelled_at: string | null;
+}> {
+  if (!DODO_API_KEY) {
+    throw new ServiceError('Dodo Payments', 'API key not configured');
+  }
+
+  try {
+    const subscription = await client.subscriptions.retrieve(subscriptionId);
+
+    return {
+      subscription_id: subscription.subscription_id,
+      status: subscription.status,
+      previous_billing_date: subscription.previous_billing_date,
+      next_billing_date: subscription.next_billing_date,
+      cancel_at_next_billing_date: subscription.cancel_at_next_billing_date,
+      cancelled_at: subscription.cancelled_at ?? null,
+    };
+  } catch (error) {
+    console.error('Error fetching subscription:', error);
+    throw new ServiceError(
+      'Dodo Payments',
+      `Failed to fetch subscription: ${
         error instanceof Error ? error.message : 'Unknown error'
       }`
     );

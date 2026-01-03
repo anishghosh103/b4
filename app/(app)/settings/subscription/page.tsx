@@ -35,6 +35,12 @@ export default async function SubscriptionPage() {
 
   const currentTier = latestPayment?.tier || 'free';
 
+  // Get billing cycle info for pro subscriptions
+  const currentPeriodEnd = latestPayment?.currentPeriodEnd
+    ? new Date(latestPayment.currentPeriodEnd).toISOString()
+    : null;
+  const cancelAtPeriodEnd = latestPayment?.cancelAtPeriodEnd ?? false;
+
   return (
     <>
       <AppHeader
@@ -55,6 +61,8 @@ export default async function SubscriptionPage() {
           pricingConfigs={JSON.parse(JSON.stringify(pricingConfigs))}
           currentTier={currentTier}
           hasPendingPayment={latestPayment?.status === 'pending'}
+          currentPeriodEnd={currentPeriodEnd}
+          cancelAtPeriodEnd={cancelAtPeriodEnd}
         />
       </main>
     </>

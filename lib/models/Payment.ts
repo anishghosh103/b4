@@ -12,6 +12,11 @@ export interface IPayment {
     value: number;
     currency: string;
   };
+  // Billing cycle tracking
+  currentPeriodStart?: Date; // Start of current billing period
+  currentPeriodEnd?: Date; // End of current billing period (next billing date)
+  cancelAtPeriodEnd?: boolean; // If cancellation is scheduled
+  cancelledAt?: Date; // When subscription was cancelled
   webhookVerified?: boolean; // Track webhook processing
   metadata?: Record<string, any>; // Additional Dodo payment details
   createdAt: Date;
@@ -71,6 +76,19 @@ const PaymentSchema = new Schema<IPaymentDocument, IPaymentModel>(
     dodoSubscriptionId: {
       type: String,
       trim: true,
+    },
+    currentPeriodStart: {
+      type: Date,
+    },
+    currentPeriodEnd: {
+      type: Date,
+    },
+    cancelAtPeriodEnd: {
+      type: Boolean,
+      default: false,
+    },
+    cancelledAt: {
+      type: Date,
     },
     amount: {
       value: {
