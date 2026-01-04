@@ -9,7 +9,10 @@ export const POST = asyncHandler(
   requireAuth(async (request, user) => {
     const { tier, successUrl } = await request.json();
 
-    const pricingConfig = await PricingConfig.findOne({ tier }).lean();
+    const pricingConfig = await PricingConfig.findOne({
+      tier,
+      environment: process.env.DODO_ENVIRONMENT || 'test_mode',
+    }).lean();
     if (!pricingConfig) {
       throw new AppError('Invalid pricing configuration provided.');
     }
