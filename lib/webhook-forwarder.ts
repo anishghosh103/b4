@@ -42,18 +42,19 @@ export async function forwardWebhookToServer(
     });
 
     if (!response.ok) {
-      const error = await response.json();
+      const error = await response.text();
+      console.log(error);
       return {
         success: false,
         forwarded: false,
         queued: false,
-        error: error.error || 'Failed to forward webhook',
+        error: error || 'Failed to forward webhook',
       };
     }
 
     return await response.json();
   } catch (error) {
-    console.error('Failed to forward webhook to server:', error);
+    console.log('Failed to forward webhook to server:', error);
     // Don't throw - webhook was still saved, forwarding is optional
     return {
       success: false,

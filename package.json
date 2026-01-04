@@ -16,6 +16,7 @@
     "@radix-ui/react-select": "^2.2.6",
     "@uiw/react-json-view": "^2.0.0-alpha.40",
     "@vercel/analytics": "^1.6.1",
+    "@vercel/functions": "^3.3.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dodopayments": "^2.13.1",

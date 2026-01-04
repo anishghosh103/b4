@@ -1,7 +1,7 @@
 import { Types } from 'mongoose';
+import Event from '../models/Event';
 import { IWebhook } from '../models/Webhook';
 import { forwardWebhookToServer } from '../webhook-forwarder';
-import Event from '../models/Event';
 
 interface DispatchParams {
   eventId: Types.ObjectId | string;
@@ -20,6 +20,7 @@ export async function dispatchToDestinations(
     params;
 
   const promises: Promise<void>[] = [];
+  console.log('dispatchToDestinations', webhook);
 
   // Destination 1: Production webhook URL (if configured)
   if (webhook.destinationUrl) {

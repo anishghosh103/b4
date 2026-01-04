@@ -28,9 +28,9 @@ Authorization: Bearer edAKikZE78aHPvLFTq5TBxtfNK1pEA7d
 Content-Type: application/json
 
 {
-  "eventId": "123",
+  "eventId": "695acaade7e97ae74b82e059",
   "method": "POST",
   "headers": {},
-  "body": { "test": "payload" },
+  "body": { "test": "payload 2" },
   "queryParams": {}
 }

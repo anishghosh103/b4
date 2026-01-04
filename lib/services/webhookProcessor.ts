@@ -1,5 +1,4 @@
 import { Types } from 'mongoose';
-import Event from '../models/Event';
 import { IWebhook } from '../models/Webhook';
 import { getHandler } from '../platforms';
 import { dispatchToDestinations } from './destinationService';
@@ -17,6 +16,7 @@ interface ProcessWebhookParams {
 export async function processWebhookAsync(
   params: ProcessWebhookParams
 ): Promise<void> {
+  console.log(1);
   const { webhook, eventId, method, headers, payload, rawBody, queryParams } =
     params;
 
@@ -26,6 +26,7 @@ export async function processWebhookAsync(
   let originalEventType: string | null = null;
   let normalizedData: unknown = null;
 
+  console.log(webhook.type);
   // Handle platform-specific processing
   if (webhook.type !== 'custom') {
     const handler = getHandler(webhook.type);
@@ -70,13 +71,15 @@ export async function processWebhookAsync(
   // };
 
   // Update event with verification and transformation results
-  await Event.findByIdAndUpdate(eventId, {
-    name: originalEventType || '',
-    verified,
-    verificationError,
-    // normalizedPayload: unifiedPayload,
-  });
+  console.log('updating event', eventId);
+  // await Event.findByIdAndUpdate(eventId, {
+  //   name: originalEventType || '',
+  //   verified,
+  //   verificationError,
+  //   // normalizedPayload: unifiedPayload,
+  // }).catch((err) => console.log(err));
 
+  console.log('here');
   // Dispatch unified payload to destinations (both simultaneously)
   await dispatchToDestinations({
     webhookId: webhook.uniqueId,

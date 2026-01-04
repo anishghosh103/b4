@@ -4,6 +4,7 @@ import dbConnect from '@/lib/mongodb';
 import { canReceiveEvent } from '@/lib/services/subscriptionService';
 import { processWebhookAsync } from '@/lib/services/webhookProcessor';
 import { asyncHandler } from '@/lib/utils/controllerHelpers';
+import { waitUntil } from '@vercel/functions';
 import { Types } from 'mongoose';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -21,6 +22,8 @@ async function handleWebhookRequest(
     const rawBody = await request.text();
 
     await dbConnect();
+
+    console.log('id');
 
     // Find webhook with signing secret
     const webhook = await Webhook.findOne({ uniqueId: id }).lean<
@@ -97,18 +100,21 @@ async function handleWebhookRequest(
       { status: 200 }
     );
 
+    console.log(0);
     // Async processing (fire-and-forget)
-    processWebhookAsync({
-      webhook,
-      eventId: event._id as Types.ObjectId,
-      method,
-      headers,
-      payload,
-      rawBody,
-      queryParams,
-    }).catch((err) => {
-      console.error('Async webhook processing failed:', err);
-    });
+    waitUntil(
+      processWebhookAsync({
+        webhook,
+        eventId: event._id as Types.ObjectId,
+        method,
+        headers,
+        payload,
+        rawBody,
+        queryParams,
+      }).catch((err) => {
+        console.error('Async webhook processing failed:', err);
+      })
+    );
 
     return response;
   } catch (error) {
