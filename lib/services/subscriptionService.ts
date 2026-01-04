@@ -15,6 +15,7 @@ import {
 import Event from '../models/Event';
 import Payment from '../models/Payment';
 import Webhook from '../models/Webhook';
+import WorkflowUsage from '../models/WorkflowUsage';
 
 // Event check status
 export type EventCheckStatus = 'ok' | 'grace_period' | 'rejected';
@@ -110,6 +111,17 @@ export async function canCreateWebhook(
 function getStartOfMonth(): Date {
   const now = new Date();
   return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+}
+
+/**
+ * Get current month string in YYYY-MM format
+ */
+function getCurrentMonth(): string {
+  const now = new Date();
+  return `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(
+    2,
+    '0'
+  )}`;
 }
 
 /**
@@ -272,14 +284,28 @@ export async function getEventRetentionDays(
 }
 
 /**
- * Check if user can create a new mock workflow
+ * Get workflow usage count for current month
  */
-export async function canCreateMockWorkflow(
-  userId: Types.ObjectId | string,
-  currentCount: number
+export async function getWorkflowUsageThisMonth(
+  userId: Types.ObjectId | string
+): Promise<number> {
+  const month = getCurrentMonth();
+  const usage = await WorkflowUsage.findOne({ userId, month }).lean();
+  return usage?.count || 0;
+}
+
+/**
+ * Check if user can trigger a workflow
+ */
+export async function canTriggerWorkflow(
+  userId: Types.ObjectId | string
 ): Promise<LimitCheckResult> {
-  const tier = await getUserTier(userId);
+  const [tier, currentCount] = await Promise.all([
+    getUserTier(userId),
+    getWorkflowUsageThisMonth(userId),
+  ]);
   const limit = getLimit(tier, 'maxMockWorkflows');
+  console.log(userId, tier, currentCount, limit);
   const unlimited = isUnlimited(limit);
 
   return {
@@ -290,6 +316,20 @@ export async function canCreateMockWorkflow(
     isUnlimited: unlimited,
     tier,
   };
+}
+
+/**
+ * Increment workflow usage for current month
+ */
+export async function incrementWorkflowUsage(
+  userId: Types.ObjectId | string
+): Promise<void> {
+  const month = getCurrentMonth();
+  await WorkflowUsage.findOneAndUpdate(
+    { userId, month },
+    { $inc: { count: 1 } },
+    { upsert: true }
+  );
 }
 
 /**
@@ -344,8 +384,8 @@ export async function getUserUsageSnapshot(
     }
   }
 
-  // Mock workflow count - placeholder until feature is implemented
-  const mockWorkflowCount = 0;
+  // Get workflow usage count for this month
+  const mockWorkflowCount = await getWorkflowUsageThisMonth(userId);
 
   return {
     tier,

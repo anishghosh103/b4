@@ -47,3 +47,6 @@ Column 3 (App Logs): Hard to search, No Replay capability.
 - restrict cli to just one device / webhook
 - add filter capability
 - create an all events page
+- workflows
+  - Additional workflows (Stripe one-time payment, PandaDoc signing)
+  - Recording & replay of real events

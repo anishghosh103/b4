@@ -6,6 +6,7 @@ import Webhook, { IWebhook } from '@/lib/models/Webhook';
 import dbConnect from '@/lib/mongodb';
 import { platformColors, platformLabels } from '@/lib/platforms';
 import { cn } from '@/lib/utils';
+import { ChevronRight, Home } from 'lucide-react';
 import { Types } from 'mongoose';
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
@@ -49,9 +50,20 @@ export default async function WebhookLayout({
               <Logo />
             </Link>
             <div className="h-6 w-px bg-border" />
-            <span className="text-sm text-muted font-medium">
-              {webhook.name}
-            </span>
+            <div className="flex items-center gap-2">
+              <Link
+                href="/dashboard"
+                className="p-2 -mr-2 rounded-full text-muted hover:text-primary hover:bg-muted/5 dark:hover:bg-muted/20 transition-all"
+              >
+                <Home className="size-3.5" />
+              </Link>
+              <span className="text-muted/50 dark:text-muted/80">
+                <ChevronRight className="size-3.5" />
+              </span>
+              <span className="text-sm text-muted font-medium">
+                {webhook.name}
+              </span>
+            </div>
             <span
               className={cn(
                 'text-xs py-1 px-2 rounded-md font-medium',

@@ -24,7 +24,6 @@ export function WebhookNav({ webhookId }: WebhookNavProps) {
       label: 'Workflows',
       icon: FlaskConical,
       isActive: pathname.includes('/workflows'),
-      disabled: true,
     },
     {
       href: `/webhook/${webhookId}/settings`,
@@ -45,10 +44,7 @@ export function WebhookNav({ webhookId }: WebhookNavProps) {
             'text-sm font-medium transition-colors',
             item.isActive
               ? 'bg-accent/10 text-foreground dark:text-accent border-accent/20'
-              : 'text-muted hover:text-foreground hover:bg-surface-elevated',
-            item.disabled
-              ? 'text-muted cursor-not-allowed opacity-50 pointer-events-none'
-              : ''
+              : 'text-muted hover:text-foreground hover:bg-surface-elevated'
           )}
         >
           <item.icon className="w-4 h-4" />

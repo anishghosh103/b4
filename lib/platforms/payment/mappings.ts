@@ -5,6 +5,7 @@ export const STRIPE_EVENT_MAPPINGS: Record<string, PaymentEventType> = {
   'customer.subscription.created': 'subscription.activated',
   'customer.subscription.updated': 'subscription.renewed',
   'customer.subscription.deleted': 'subscription.cancelled',
+  'invoice.paid': 'payment.completed',
   'invoice.payment_succeeded': 'payment.completed',
   'invoice.payment_failed': 'payment.failed',
   'payment_intent.succeeded': 'payment.completed',

@@ -1,6 +1,7 @@
 'use client';
 
-import { platformColors, platformLabels } from '@/lib/platforms';
+import { getStatusCode, getStatusColor } from '@/lib/events';
+import { IEvent } from '@/lib/models/Event';
 import { Platform } from '@/lib/platforms/types';
 import { cn } from '@/lib/utils';
 import { useEffect, useState } from 'react';
@@ -110,7 +111,8 @@ export function EventStream() {
 
 // Dashboard event list item (non-animated version for dashboard)
 interface DashboardEventProps {
-  event: string;
+  event: IEvent;
+  name: string;
   platform: Platform;
   time: string;
   status: 'success' | 'error';
@@ -119,6 +121,7 @@ interface DashboardEventProps {
 
 export function DashboardEvent({
   event,
+  name,
   platform,
   time,
   status,
@@ -155,18 +158,17 @@ export function DashboardEvent({
 
       {/* Event name */}
       <span className="font-mono text-sm text-foreground flex-1 truncate">
-        {event}
+        {name}
       </span>
 
       {/* Platform badge */}
       <span
         className={cn(
-          'text-xs font-medium px-2 py-1 rounded-md',
-          'bg-(--platform-background)/10 text-(--platform-foreground) border border-(--platform-border)/20',
-          platformColors[platform]
+          'text-xs font-medium px-2.5 py-1 rounded-full',
+          getStatusColor(event)
         )}
       >
-        {platformLabels[platform]}
+        {getStatusCode(event)}
       </span>
 
       {/* Time */}

@@ -6,7 +6,8 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
-import { Platform } from '@/lib/platforms/types';
+import { getStatusCode, getStatusColor, methodColors } from '@/lib/events';
+import { IEvent } from '@/lib/models/Event';
 import { cn, formatRelativeTime } from '@/lib/utils';
 import JsonView from '@uiw/react-json-view';
 import { githubDarkTheme as jsonViewDarkTheme } from '@uiw/react-json-view/githubDark';
@@ -20,50 +21,10 @@ import {
 import { useEffect, useState } from 'react';
 import { CollapsibleSection } from './collapsible-section';
 
-export interface EventData {
-  _id: string;
-  name?: string;
-  platform?: Platform;
-  method: 'POST' | 'GET' | 'PUT' | 'PATCH' | 'DELETE';
-  payload?: unknown;
-  headers?: Record<string, string>;
-  queryParams?: Record<string, string>;
-  responseStatus: number;
-  responseBody?: unknown;
-  verified?: boolean;
-  verificationError?: string | null;
-  normalizedPayload?: unknown;
-  overQuota?: boolean;
-  createdAt: string;
-}
-
 interface EventDetailPanelProps {
-  event: EventData | null;
+  event: IEvent | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}
-
-const methodColors: Record<string, string> = {
-  POST: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-400 dark:border-emerald-400/50',
-  GET: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-400 dark:border-blue-400/50',
-  PUT: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-400 dark:border-amber-400/50',
-  PATCH:
-    'bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-400 dark:border-orange-400/50',
-  DELETE:
-    'bg-red-500/10 text-red-600 dark:text-red-400 border border-red-400 dark:border-red-400/50',
-};
-
-function getStatusColor(status: number): string {
-  if (status >= 200 && status < 300) {
-    return 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-400 dark:border-emerald-400/50';
-  }
-  if (status >= 400 && status < 500) {
-    return 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-400 dark:border-amber-400/50';
-  }
-  if (status >= 500) {
-    return 'bg-red-500/10 text-red-600 dark:text-red-400 border border-red-400 dark:border-red-400/50';
-  }
-  return 'bg-zinc-500/10 text-zinc-600 border border-zinc-400 dark:border-zinc-400/50';
 }
 
 function stringify(data: unknown): string {
@@ -131,10 +92,10 @@ export function EventDetailPanel({
                     <span
                       className={cn(
                         'text-xs font-medium px-2.5 py-1 rounded-full',
-                        getStatusColor(event.responseStatus)
+                        getStatusColor(event)
                       )}
                     >
-                      Status: {event.responseStatus}
+                      Status: {getStatusCode(event)}
                     </span>
                     {event.verified !== undefined && (
                       <span
@@ -264,15 +225,31 @@ export function EventDetailPanel({
 
               {view === 'response' ? (
                 <>
-                  {/* Response */}
-                  {hasContent(event.responseBody) && (
+                  {/* URL Response */}
+                  {hasContent(event.urlResponse?.body) && (
                     <CollapsibleSection
-                      title="Response Sent"
+                      title="Production URL Response"
                       defaultOpen
                     >
                       <div className="max-h-100 overflow-auto p-4">
                         <JsonView
-                          value={event.responseBody as any}
+                          value={event.urlResponse.body as any}
+                          style={jsonViewTheme}
+                          displayDataTypes={false}
+                          displayObjectSize={false}
+                        />
+                      </div>
+                    </CollapsibleSection>
+                  )}
+                  {/* CLI Response */}
+                  {hasContent(event.cliResponse?.body) && (
+                    <CollapsibleSection
+                      title="CLI Response"
+                      defaultOpen
+                    >
+                      <div className="max-h-100 overflow-auto p-4">
+                        <JsonView
+                          value={event.cliResponse.body as any}
                           style={jsonViewTheme}
                           displayDataTypes={false}
                           displayObjectSize={false}

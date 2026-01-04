@@ -1,15 +1,14 @@
 'use client';
 
 import { DashboardEvent } from '@/components/features';
-import {
-  EventDetailPanel,
-  type EventData,
-} from '@/components/features/event-detail-panel';
+import { EventDetailPanel } from '@/components/features/event-detail-panel';
+import { getStatusCode } from '@/lib/events';
+import { IEvent } from '@/lib/models/Event';
 import { formatRelativeTime } from '@/lib/utils';
 import { Inbox } from 'lucide-react';
 import { useState } from 'react';
 
-function getEventDisplayName(event: EventData): string {
+function getEventDisplayName(event: IEvent): string {
   // If we have an event name, use it
   if (event.name) return event.name;
 
@@ -30,14 +29,14 @@ function getEventDisplayName(event: EventData): string {
 
 interface EventsClientProps {
   webhookId: string;
-  initialEvents: EventData[];
+  initialEvents: IEvent[];
 }
 
 export function EventsClient({ initialEvents }: EventsClientProps) {
-  const [selectedEvent, setSelectedEvent] = useState<EventData | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<IEvent | null>(null);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
 
-  const handleEventClick = (event: EventData) => {
+  const handleEventClick = (event: IEvent) => {
     setSelectedEvent(event);
     setIsPanelOpen(true);
   };
@@ -70,11 +69,12 @@ export function EventsClient({ initialEvents }: EventsClientProps) {
         <div className="space-y-2">
           {initialEvents.map((event) => (
             <DashboardEvent
-              key={event._id}
-              event={getEventDisplayName(event)}
+              key={event._id.toString()}
+              name={getEventDisplayName(event)}
+              event={event}
               platform={event.platform || 'custom'}
               time={formatRelativeTime(event.createdAt)}
-              status={event.responseStatus < 400 ? 'success' : 'error'}
+              status={getStatusCode(event) < 400 ? 'success' : 'error'}
               onClick={() => handleEventClick(event)}
             />
           ))}
