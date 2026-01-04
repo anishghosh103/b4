@@ -92,10 +92,19 @@ function Navigation() {
 
 // Hero Section
 function HeroSection() {
+  const [copied, setCopied] = useState(false);
   const { data: session } = useSession();
 
+  const copyCommand = async () => {
+    await navigator.clipboard.writeText(
+      `npx hookone 3000 53709ded /api/webhook`
+    );
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
-    <section className="pt-36 pb-24 px-6">
+    <section className="pt-28 pb-24 px-6">
       <div className="max-w-6xl mx-auto">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <div>
@@ -145,7 +154,7 @@ function HeroSection() {
 
           {/* Live Event Stream */}
           <div
-            className="relative animate-slide-in-right opacity-0 delay-300"
+            className="relative animate-slide-in-right opacity-0 delay-300 space-y-4"
             style={{ animationFillMode: 'forwards' }}
           >
             <div className="absolute -inset-8 bg-gradient-to-r from-accent/10 via-transparent to-violet-500/5 rounded-3xl blur-3xl" />
@@ -172,6 +181,33 @@ function HeroSection() {
                 </button>
               </div>
             </Card>
+            {/* CLI Install */}
+            <div
+              className="animate-slide-up opacity-0 delay-400"
+              style={{ animationFillMode: 'forwards' }}
+            >
+              <div
+                className="code-block cursor-pointer group"
+                onClick={copyCommand}
+              >
+                <div className="code-header">
+                  <div className="code-dot bg-red-500/80" />
+                  <div className="code-dot bg-yellow-500/80" />
+                  <div className="code-dot bg-green-500/80" />
+                  <span className="ml-2 text-xs text-muted">terminal</span>
+                  <span className="ml-auto text-xs text-muted group-hover:text-accent transition-colors">
+                    {copied ? 'Copied!' : 'Click to copy'}
+                  </span>
+                </div>
+                <div className="p-4 font-mono text-sm">
+                  <span className="text-muted">$</span>{' '}
+                  <span className="text-emerald-400">npx</span>{' '}
+                  <span className="text-foreground">
+                    hookone 3000 53709ded /api/webhook
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
