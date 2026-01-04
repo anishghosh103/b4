@@ -15,16 +15,29 @@ import { githubLightTheme as jsonViewLightTheme } from '@uiw/react-json-view/git
 import {
   AlertCircle,
   AlertTriangle,
+  Check,
   CheckCircle2,
+  Globe,
+  Loader2,
+  Repeat,
+  Terminal,
   XCircle,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { CollapsibleSection } from './collapsible-section';
 
+interface WebhookConfig {
+  destinationUrl: string | null;
+  cliEnabled: boolean;
+}
+
 interface EventDetailPanelProps {
   event: IEvent | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  webhookId?: string;
+  webhookConfig?: WebhookConfig;
+  onEventUpdate?: (event: IEvent) => void;
 }
 
 function stringify(data: unknown): string {
@@ -43,11 +56,26 @@ export function EventDetailPanel({
   event,
   open,
   onOpenChange,
+  webhookId,
+  webhookConfig,
+  onEventUpdate,
 }: EventDetailPanelProps) {
   const [jsonViewTheme, setJsonViewTheme] = useState(jsonViewDarkTheme);
   const [view, setView] = useState<'request' | 'response'>('request');
+  const [isReplaying, setIsReplaying] = useState<'url' | 'cli' | 'both' | null>(
+    null
+  );
+  const [replayResult, setReplayResult] = useState<{
+    type: 'success' | 'error';
+    message: string;
+  } | null>(null);
+
   const platform = event?.platform || 'custom';
   const eventName = event?.name || 'Event';
+
+  const canReplayToUrl = !!webhookConfig?.destinationUrl;
+  const canReplayToCli = !!webhookConfig?.cliEnabled;
+  const hasAnyDestination = canReplayToUrl || canReplayToCli;
 
   useEffect(() => {
     setJsonViewTheme({
@@ -58,12 +86,55 @@ export function EventDetailPanel({
     });
   }, [open]);
 
+  const handleReplay = async (destinations: { url?: boolean; cli?: boolean }) => {
+    if (!event || !webhookId) return;
+
+    const replayType =
+      destinations.url && destinations.cli
+        ? 'both'
+        : destinations.url
+          ? 'url'
+          : 'cli';
+
+    setIsReplaying(replayType);
+    setReplayResult(null);
+
+    try {
+      const response = await fetch(
+        `/api/webhooks/${webhookId}/events/${event._id}/replay`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ destinations }),
+        }
+      );
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Replay failed');
+      }
+
+      const data = await response.json();
+      setReplayResult({ type: 'success', message: 'Event replayed successfully' });
+      onEventUpdate?.(data.event);
+
+      setTimeout(() => setReplayResult(null), 3000);
+    } catch (error) {
+      setReplayResult({
+        type: 'error',
+        message: error instanceof Error ? error.message : 'Replay failed',
+      });
+    } finally {
+      setIsReplaying(null);
+    }
+  };
+
   return (
     <Sheet
       open={open}
       onOpenChange={onOpenChange}
     >
-      <SheetContent className="flex flex-col p-0 gap-0 sm:max-w-2xl w-3xl">
+      <SheetContent className="flex flex-col p-0 gap-0 max-w-full sm:max-w-2xl w-full sm:w-3xl">
         {!event ? null : (
           <>
             {/* Header */}
@@ -73,6 +144,89 @@ export function EventDetailPanel({
                   {eventName}
                 </span>
               </SheetTitle>
+
+              {/* Replay Actions */}
+              {hasAnyDestination && webhookId && (
+                <div className="flex items-center gap-2 mt-3">
+                  <span className="text-xs text-muted">Replay to:</span>
+                  {canReplayToUrl && (
+                    <button
+                      onClick={() => handleReplay({ url: true })}
+                      disabled={isReplaying !== null}
+                      className={cn(
+                        'inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-md',
+                        'bg-muted/10 hover:bg-muted/20 border border-border',
+                        'transition-colors duration-150',
+                        'disabled:opacity-50 disabled:cursor-not-allowed'
+                      )}
+                    >
+                      {isReplaying === 'url' ? (
+                        <Loader2 className="size-3 animate-spin" />
+                      ) : (
+                        <Globe className="size-3" />
+                      )}
+                      URL
+                    </button>
+                  )}
+                  {canReplayToCli && (
+                    <button
+                      onClick={() => handleReplay({ cli: true })}
+                      disabled={isReplaying !== null}
+                      className={cn(
+                        'inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-md',
+                        'bg-muted/10 hover:bg-muted/20 border border-border',
+                        'transition-colors duration-150',
+                        'disabled:opacity-50 disabled:cursor-not-allowed'
+                      )}
+                    >
+                      {isReplaying === 'cli' ? (
+                        <Loader2 className="size-3 animate-spin" />
+                      ) : (
+                        <Terminal className="size-3" />
+                      )}
+                      CLI
+                    </button>
+                  )}
+                  {canReplayToUrl && canReplayToCli && (
+                    <button
+                      onClick={() => handleReplay({ url: true, cli: true })}
+                      disabled={isReplaying !== null}
+                      className={cn(
+                        'inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-md',
+                        'bg-muted/10 hover:bg-muted/20 border border-border',
+                        'transition-colors duration-150',
+                        'disabled:opacity-50 disabled:cursor-not-allowed'
+                      )}
+                    >
+                      {isReplaying === 'both' ? (
+                        <Loader2 className="size-3 animate-spin" />
+                      ) : (
+                        <Repeat className="size-3" />
+                      )}
+                      Both
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {/* Replay Result Feedback */}
+              {replayResult && (
+                <p
+                  className={cn(
+                    'text-xs mt-2 flex items-center gap-1',
+                    replayResult.type === 'success'
+                      ? 'text-emerald-500'
+                      : 'text-red-500'
+                  )}
+                >
+                  {replayResult.type === 'success' ? (
+                    <Check className="size-3" />
+                  ) : (
+                    <AlertCircle className="size-3" />
+                  )}
+                  {replayResult.message}
+                </p>
+              )}
             </SheetHeader>
 
             {/* Scrollable content */}

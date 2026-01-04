@@ -30,7 +30,7 @@ export async function dispatchToDestinations(
         method,
         headers,
         payload,
-      })
+      }).then(() => {})
     );
   }
 
@@ -52,13 +52,13 @@ export async function dispatchToDestinations(
   await Promise.allSettled(promises);
 }
 
-async function forwardToProductionUrl(params: {
+export async function forwardToProductionUrl(params: {
   eventId: Types.ObjectId | string;
   url: string;
   method: string;
   headers: Record<string, string>;
   payload: any;
-}): Promise<void> {
+}): Promise<{ status: number; body: unknown } | { error: string }> {
   const { eventId, url, method, headers, payload } = params;
 
   try {
@@ -99,7 +99,10 @@ async function forwardToProductionUrl(params: {
         body: parsedBody,
       },
     });
+
+    return { status: response.status, body: parsedBody };
   } catch (error) {
     console.error(`Failed to forward to ${url}:`, error);
+    return { error: error instanceof Error ? error.message : 'Unknown error' };
   }
 }

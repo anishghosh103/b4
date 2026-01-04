@@ -27,12 +27,23 @@ function getEventDisplayName(event: IEvent): string {
   return event.method;
 }
 
+interface WebhookConfig {
+  destinationUrl: string | null;
+  cliEnabled: boolean;
+}
+
 interface EventsClientProps {
   webhookId: string;
   initialEvents: IEvent[];
+  webhookConfig: WebhookConfig;
 }
 
-export function EventsClient({ initialEvents }: EventsClientProps) {
+export function EventsClient({
+  webhookId,
+  initialEvents,
+  webhookConfig,
+}: EventsClientProps) {
+  const [events, setEvents] = useState<IEvent[]>(initialEvents);
   const [selectedEvent, setSelectedEvent] = useState<IEvent | null>(null);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
 
@@ -41,7 +52,18 @@ export function EventsClient({ initialEvents }: EventsClientProps) {
     setIsPanelOpen(true);
   };
 
-  if (initialEvents.length === 0) {
+  const handleEventUpdate = (updatedEvent: IEvent) => {
+    setEvents((prev) =>
+      prev.map((e) =>
+        e._id.toString() === updatedEvent._id.toString() ? updatedEvent : e
+      )
+    );
+    if (selectedEvent?._id.toString() === updatedEvent._id.toString()) {
+      setSelectedEvent(updatedEvent);
+    }
+  };
+
+  if (events.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
         <div className="w-12 h-12 rounded-full bg-muted/10 dark:bg-muted/30 flex items-center justify-center mb-4">
@@ -67,7 +89,7 @@ export function EventsClient({ initialEvents }: EventsClientProps) {
         </div>
 
         <div className="space-y-2">
-          {initialEvents.map((event) => (
+          {events.map((event) => (
             <DashboardEvent
               key={event._id.toString()}
               name={getEventDisplayName(event)}
@@ -76,6 +98,9 @@ export function EventsClient({ initialEvents }: EventsClientProps) {
               time={formatRelativeTime(event.createdAt)}
               status={getStatusCode(event) < 400 ? 'success' : 'error'}
               onClick={() => handleEventClick(event)}
+              webhookId={webhookId}
+              webhookConfig={webhookConfig}
+              onReplayComplete={handleEventUpdate}
             />
           ))}
         </div>
@@ -85,6 +110,9 @@ export function EventsClient({ initialEvents }: EventsClientProps) {
         event={selectedEvent}
         open={isPanelOpen}
         onOpenChange={setIsPanelOpen}
+        webhookId={webhookId}
+        webhookConfig={webhookConfig}
+        onEventUpdate={handleEventUpdate}
       />
     </>
   );

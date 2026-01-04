@@ -1,9 +1,18 @@
 'use client';
 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { getStatusCode, getStatusColor } from '@/lib/events';
 import { IEvent } from '@/lib/models/Event';
 import { Platform } from '@/lib/platforms/types';
 import { cn } from '@/lib/utils';
+import { Check, Globe, Loader2, Repeat, Terminal, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface WebhookEventProps {
@@ -110,6 +119,11 @@ export function EventStream() {
 }
 
 // Dashboard event list item (non-animated version for dashboard)
+interface WebhookConfig {
+  destinationUrl: string | null;
+  cliEnabled: boolean;
+}
+
 interface DashboardEventProps {
   event: IEvent;
   name: string;
@@ -117,6 +131,9 @@ interface DashboardEventProps {
   time: string;
   status: 'success' | 'error';
   onClick?: () => void;
+  webhookId?: string;
+  webhookConfig?: WebhookConfig;
+  onReplayComplete?: (updatedEvent: IEvent) => void;
 }
 
 export function DashboardEvent({
@@ -126,11 +143,59 @@ export function DashboardEvent({
   time,
   status,
   onClick,
+  webhookId,
+  webhookConfig,
+  onReplayComplete,
 }: DashboardEventProps) {
+  const [replayOpen, setReplayOpen] = useState(false);
+  const [isReplaying, setIsReplaying] = useState(false);
+  const [replayStatus, setReplayStatus] = useState<
+    'idle' | 'success' | 'error'
+  >('idle');
+
+  const canReplayToUrl = !!webhookConfig?.destinationUrl;
+  const canReplayToCli = !!webhookConfig?.cliEnabled;
+  const hasAnyDestination = canReplayToUrl || canReplayToCli;
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       onClick?.();
+    }
+  };
+
+  const handleReplay = async (destinations: {
+    url?: boolean;
+    cli?: boolean;
+  }) => {
+    if (!webhookId) return;
+
+    setIsReplaying(true);
+    setReplayStatus('idle');
+
+    try {
+      const response = await fetch(
+        `/api/webhooks/${webhookId}/events/${event._id}/replay`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ destinations }),
+        }
+      );
+
+      if (!response.ok) throw new Error('Replay failed');
+
+      const data = await response.json();
+      setReplayStatus('success');
+      onReplayComplete?.(data.event);
+
+      // Reset after 2 seconds
+      setTimeout(() => setReplayStatus('idle'), 2000);
+    } catch (error) {
+      setReplayStatus('error');
+      setTimeout(() => setReplayStatus('idle'), 3000);
+    } finally {
+      setIsReplaying(false);
     }
   };
 
@@ -174,17 +239,97 @@ export function DashboardEvent({
       {/* Time */}
       <span className="text-xs text-muted w-16 text-right">{time}</span>
 
-      {/* Replay button */}
-      <button
-        className={cn(
-          'text-xs text-accent px-3 py-1.5 rounded-lg',
-          'bg-accent/0 hover:bg-accent/10',
-          'opacity-0 group-hover:opacity-100',
-          'transition-all duration-200'
-        )}
-      >
-        Replay
-      </button>
+      {/* Replay button/dropdown */}
+      {hasAnyDestination && webhookId ? (
+        <DropdownMenu
+          open={replayOpen}
+          onOpenChange={setReplayOpen}
+          modal={false}
+        >
+          <DropdownMenuTrigger asChild>
+            <button
+              onClick={(e) => e.stopPropagation()}
+              disabled={isReplaying}
+              className={cn(
+                'text-xs text-accent px-3 py-1.5 rounded-lg',
+                'bg-accent/0 hover:bg-accent/10',
+                'opacity-0 group-hover:opacity-100',
+                'transition-all duration-200',
+                'flex items-center gap-1.5',
+                (replayOpen || isReplaying || replayStatus !== 'idle') &&
+                  'opacity-100'
+              )}
+            >
+              {isReplaying ? (
+                <Loader2 className="w-3 h-3 animate-spin" />
+              ) : replayStatus === 'success' ? (
+                <Check className="w-3 h-3 text-emerald-500" />
+              ) : replayStatus === 'error' ? (
+                <X className="w-3 h-3 text-red-500" />
+              ) : (
+                'Replay'
+              )}
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="end"
+            sideOffset={4}
+          >
+            <DropdownMenuLabel className="text-xs">
+              Replay to...
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {canReplayToUrl && (
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleReplay({ url: true });
+                }}
+              >
+                <Globe className="w-4 h-4 mr-2" />
+                Production URL
+              </DropdownMenuItem>
+            )}
+            {canReplayToCli && (
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleReplay({ cli: true });
+                }}
+              >
+                <Terminal className="w-4 h-4 mr-2" />
+                CLI
+              </DropdownMenuItem>
+            )}
+            {canReplayToUrl && canReplayToCli && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleReplay({ url: true, cli: true });
+                  }}
+                >
+                  <Repeat className="w-4 h-4 mr-2" />
+                  Both Destinations
+                </DropdownMenuItem>
+              </>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ) : (
+        <button
+          className={cn(
+            'text-xs text-muted px-3 py-1.5 rounded-lg',
+            'opacity-0 group-hover:opacity-100',
+            'transition-all duration-200',
+            'cursor-not-allowed'
+          )}
+          disabled
+        >
+          Replay
+        </button>
+      )}
     </div>
   );
 }

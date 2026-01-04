@@ -43,6 +43,10 @@ export default async function WebhookEventsPage({
     <EventsClient
       webhookId={id}
       initialEvents={JSON.parse(JSON.stringify(events))}
+      webhookConfig={{
+        destinationUrl: webhook.destinationUrl,
+        cliEnabled: webhook.cliEnabled,
+      }}
     />
   );
 }

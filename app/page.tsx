@@ -112,8 +112,7 @@ function HeroSection() {
               className="text-5xl md:text-6xl font-bold leading-[1.1] mb-6 animate-slide-up opacity-0 delay-100"
               style={{ animationFillMode: 'forwards' }}
             >
-              Your webhook URL expires.{' '}
-              <span className="text-accent">Your sanity shouldn&apos;t.</span>
+              One webhook URL. <span className="text-accent">Forever.</span>
             </h1>
 
             <p
@@ -192,7 +191,9 @@ function ProblemSection() {
   return (
     <section className="py-20 px-6">
       <div className="max-w-4xl mx-auto text-center">
-        <h2 className="text-2xl md:text-3xl font-bold mb-10">Sound familiar?</h2>
+        <h2 className="text-2xl md:text-3xl font-bold mb-10">
+          Sound familiar?
+        </h2>
 
         <div className="grid sm:grid-cols-2 gap-4 mb-10">
           {painPoints.map((point, i) => (
@@ -433,9 +434,9 @@ function ComparisonSection() {
   const comparisons = {
     ngrok: {
       headline: 'Tired of ngrok URL shuffling?',
-      body: "ngrok is great for tunneling. But for webhooks, you need more. Permanent URLs that never change, full event history with replay, built-in signature verification, and team collaboration—all without the $240/year price tag for a static domain.",
+      body: 'ngrok is great for tunneling. But for webhooks, you need more. Permanent URLs that never change, full event history with replay, built-in signature verification, and team collaboration—all without the $240/year price tag for a static domain.',
       bullets: [
-        'Permanent URLs on free tier (vs ngrok\'s $8/mo)',
+        "Permanent URLs on free tier (vs ngrok's $8/mo)",
         'Full event history with one-click replay',
         'Built-in Stripe/DocuSign signature verification',
         'See exactly what payload hit your endpoint',
@@ -1158,7 +1159,7 @@ function FAQSection() {
     {
       question: 'How is HookOne different from ngrok?',
       answer:
-        "ngrok is a general-purpose tunneling tool—great for exposing localhost, but webhooks are an afterthought. HookOne is built specifically for webhooks: permanent URLs that never change, full event history with replay, built-in signature verification, and platform-aware parsing for Stripe, DocuSign, and more. Plus, you get a permanent URL on the free tier—no $240/year for a static domain.",
+        'ngrok is a general-purpose tunneling tool—great for exposing localhost, but webhooks are an afterthought. HookOne is built specifically for webhooks: permanent URLs that never change, full event history with replay, built-in signature verification, and platform-aware parsing for Stripe, DocuSign, and more. Plus, you get a permanent URL on the free tier—no $240/year for a static domain.',
     },
     {
       question: 'Can I use HookOne for free?',
@@ -1209,7 +1210,7 @@ function FAQSection() {
                 onClick={() => setOpenIndex(openIndex === i ? null : i)}
                 className="w-full flex items-center justify-between p-5 text-left hover:bg-surface-elevated/50 transition-colors"
               >
-                <span className="font-medium text-sm pr-4">{faq.question}</span>
+                <span className="font-medium  pr-4">{faq.question}</span>
                 <svg
                   className={cn(
                     'w-5 h-5 text-muted flex-shrink-0 transition-transform',
@@ -1229,9 +1230,7 @@ function FAQSection() {
               </button>
               {openIndex === i && (
                 <div className="px-5 pb-5">
-                  <p className="text-sm text-muted leading-relaxed">
-                    {faq.answer}
-                  </p>
+                  <p className=" text-muted leading-relaxed">{faq.answer}</p>
                 </div>
               )}
             </div>
