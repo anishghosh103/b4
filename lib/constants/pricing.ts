@@ -20,7 +20,7 @@ export const TIER_LIMITS: Record<
     maxWebhooks: 1,
     maxEventsPerMonth: 1000,
     eventRetentionDays: 7,
-    maxMockWorkflows: 3,
+    maxMockWorkflows: 10,
   },
   pro: {
     maxWebhooks: Infinity,
@@ -60,7 +60,7 @@ export const PRICING_TIERS = {
       `${TIER_LIMITS.free.maxEventsPerMonth.toLocaleString()} events / month`,
       `${TIER_LIMITS.free.eventRetentionDays}-day event history`,
       'CLI localhost relay',
-      `${TIER_LIMITS.free.maxMockWorkflows} mock workflows`,
+      `${TIER_LIMITS.free.maxMockWorkflows} mock workflow runs`,
     ],
   },
   pro: {
@@ -71,8 +71,8 @@ export const PRICING_TIERS = {
       'Unlimited events',
       `${TIER_LIMITS.pro.eventRetentionDays}-day event history`,
       'Priority localhost relay',
-      'All mock workflows',
-      'Team collaboration',
+      'Unlimited mock workflow runs',
+      'Production URL relay',
       'Webhook signature verification',
     ],
   },
