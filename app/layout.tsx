@@ -21,9 +21,31 @@ const mono = Space_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'HookOne - Webhook Testing Made Simple',
+  title: 'Permanent Webhook URLs for Developers | HookOne - ngrok Alternative',
   description:
-    'Get a permanent URL for all your webhooks. Inspect payloads, replay events, and relay to localhost. No more ngrok URL shuffling.',
+    'Get a permanent webhook URL that never changes. Test Stripe, DocuSign, and payment webhooks locally. Inspect payloads, replay events, and relay to localhost. Free to start.',
+  keywords: [
+    'webhook testing',
+    'permanent webhook url',
+    'ngrok alternative',
+    'test stripe webhooks locally',
+    'webhook localhost relay',
+    'replay webhook events',
+    'webhook testing tool',
+  ],
+  openGraph: {
+    title: 'Permanent Webhook URLs for Developers | HookOne',
+    description:
+      'Get a permanent webhook URL that never changes. Test Stripe, DocuSign, and payment webhooks locally. Free to start.',
+    type: 'website',
+    siteName: 'HookOne',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Permanent Webhook URLs for Developers | HookOne',
+    description:
+      'Get a permanent webhook URL that never changes. Test Stripe, DocuSign, and payment webhooks locally. Free to start.',
+  },
 };
 
 export default function RootLayout({

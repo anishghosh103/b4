@@ -1,5 +1,6 @@
 'use client';
 
+import { UpgradeToPro } from '@/components/features/upgrade-to-pro';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,6 +14,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switcher } from '@/components/ui/switcher';
+import { PricingTier } from '@/lib/constants/pricing';
 import { Platform } from '@/lib/platforms/types';
 import { cn } from '@/lib/utils';
 import { AlertTriangle, Check, Copy, Eye, EyeOff, Trash2 } from 'lucide-react';
@@ -67,6 +69,7 @@ interface SettingsClientProps {
   initialType: Platform;
   initialDestinationUrl: string;
   initialCliEnabled: boolean;
+  tier: PricingTier;
 }
 
 export function SettingsClient({
@@ -76,6 +79,7 @@ export function SettingsClient({
   initialType,
   initialDestinationUrl,
   initialCliEnabled,
+  tier,
 }: SettingsClientProps) {
   const router = useRouter();
 
@@ -275,15 +279,18 @@ export function SettingsClient({
           </div>
           <div className="px-4 sm:px-6 py-4 space-y-4">
             <div className="flex flex-col gap-2">
-              <label
-                htmlFor="signing-secret"
-                className="text-sm font-medium text-foreground px-1"
-              >
-                Signing Secret
-                <span className="text-muted font-normal ml-1">
-                  (leave empty to keep current)
-                </span>
-              </label>
+              <div className="flex items-center justify-between">
+                <label
+                  htmlFor="signing-secret"
+                  className="text-sm font-medium text-foreground px-1"
+                >
+                  Signing Secret
+                  <span className="text-muted font-normal ml-1">
+                    (leave empty to keep current)
+                  </span>
+                </label>
+                {tier === 'free' ? <UpgradeToPro /> : null}
+              </div>
               <div className="relative">
                 <Input
                   id="signing-secret"
@@ -296,11 +303,13 @@ export function SettingsClient({
                   }}
                   placeholder="whsec_..."
                   className="pr-10"
+                  disabled={tier === 'free'}
                 />
                 <button
                   type="button"
                   onClick={() => setShowSecret(!showSecret)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-foreground"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-foreground disabled:text-muted disabled:opacity-30 disabled:cursor-not-allowed"
+                  disabled={tier === 'free'}
                 >
                   {showSecret ? (
                     <EyeOff className="w-4 h-4" />
@@ -326,12 +335,15 @@ export function SettingsClient({
         <div className="px-4 sm:px-6 py-4 space-y-4">
           {/* Production URL */}
           <div className="flex flex-col gap-2">
-            <label
-              htmlFor="destination-url"
-              className="text-sm font-medium text-foreground px-1"
-            >
-              Production URL
-            </label>
+            <div className="flex items-center justify-between">
+              <label
+                htmlFor="destination-url"
+                className="text-sm font-medium text-foreground px-1"
+              >
+                Production URL
+              </label>
+              {tier === 'free' ? <UpgradeToPro /> : null}
+            </div>
             <Input
               id="destination-url"
               type="url"
@@ -342,6 +354,7 @@ export function SettingsClient({
                 setSaveSuccess(false);
               }}
               placeholder="https://your-app.com/webhooks"
+              disabled={tier === 'free'}
             />
             <p className="text-xs text-muted px-1">
               Forward webhooks to this URL

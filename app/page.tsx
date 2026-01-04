@@ -105,23 +105,24 @@ function HeroSection() {
               className="mb-6 animate-slide-up opacity-0"
               style={{ animationFillMode: 'forwards' }}
             >
-              Your URL never changes
+              Stop updating webhook URLs
             </Badge>
 
             <h1
               className="text-5xl md:text-6xl font-bold leading-[1.1] mb-6 animate-slide-up opacity-0 delay-100"
               style={{ animationFillMode: 'forwards' }}
             >
-              Webhook testing, <span className="text-accent">simplified</span>
+              Your webhook URL expires.{' '}
+              <span className="text-accent">Your sanity shouldn&apos;t.</span>
             </h1>
 
             <p
               className="text-lg text-muted leading-normal mb-8 max-w-lg animate-slide-up opacity-0 delay-200"
               style={{ animationFillMode: 'forwards' }}
             >
-              Get a permanent URL for all your webhooks. Inspect payloads,
-              replay events, and relay to localhost. No more ngrok URL
-              shuffling.
+              Get a permanent webhook URL that never changes. Stop updating
+              Stripe, DocuSign, and payment providers every time ngrok restarts.
+              Inspect, replay, and relay to localhost—all for free.
             </p>
 
             <div
@@ -137,7 +138,7 @@ function HeroSection() {
                   size="lg"
                   onClick={() => signIn('google')}
                 >
-                  Get started for free
+                  Get your permanent URL
                 </Button>
               )}
             </div>
@@ -174,6 +175,44 @@ function HeroSection() {
             </Card>
           </div>
         </div>
+      </div>
+    </section>
+  );
+}
+
+// Problem Section
+function ProblemSection() {
+  const painPoints = [
+    '"I updated my webhook URL in Stripe for the 100th time this month"',
+    '"My teammate restarted ngrok and broke my test"',
+    '"I can\'t replay that webhook event—it\'s gone forever"',
+    '"I have 5 different sandbox accounts just to test payments"',
+  ];
+
+  return (
+    <section className="py-20 px-6">
+      <div className="max-w-4xl mx-auto text-center">
+        <h2 className="text-2xl md:text-3xl font-bold mb-10">Sound familiar?</h2>
+
+        <div className="grid sm:grid-cols-2 gap-4 mb-10">
+          {painPoints.map((point, i) => (
+            <div
+              key={i}
+              className="p-5 rounded-xl bg-surface-elevated/50 border border-border text-left"
+            >
+              <p className="text-muted italic text-sm leading-relaxed">
+                {point}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        <p className="text-muted">
+          If any of these hit home, you&apos;re not alone.{' '}
+          <span className="text-foreground font-medium">
+            Webhook testing shouldn&apos;t be this painful.
+          </span>
+        </p>
       </div>
     </section>
   );
@@ -241,7 +280,7 @@ function FeaturesSection() {
           />
         </svg>
       ),
-      title: 'Permanent URLs',
+      title: 'Set once. Never touch again.',
       description:
         'Your webhook URL never expires or changes. Set it once in Stripe, DocuSign, or any platform and forget about it.',
       delay: 'delay-100',
@@ -262,7 +301,7 @@ function FeaturesSection() {
           />
         </svg>
       ),
-      title: 'Localhost Relay',
+      title: 'Test locally without the URL dance',
       description:
         'Forward webhooks to your local development server with a single CLI command. No network configuration needed.',
       delay: 'delay-200',
@@ -283,7 +322,7 @@ function FeaturesSection() {
           />
         </svg>
       ),
-      title: 'Event Replay',
+      title: 'Replay any webhook. Debug anything.',
       description:
         'Replay any webhook event with one click. Perfect for debugging edge cases and testing error handling.',
       delay: 'delay-300',
@@ -304,7 +343,7 @@ function FeaturesSection() {
           />
         </svg>
       ),
-      title: 'Payload Inspector',
+      title: 'See exactly what came in',
       description:
         'View headers, body, and metadata of every webhook in a clean interface. Export to JSON or cURL.',
       delay: 'delay-400',
@@ -325,7 +364,7 @@ function FeaturesSection() {
           />
         </svg>
       ),
-      title: 'Mock Workflows',
+      title: 'Test without sandbox accounts',
       description:
         'Test your integration without signing up for third-party services. We simulate webhooks from Stripe, Dodo, and more.',
       delay: 'delay-500',
@@ -346,7 +385,7 @@ function FeaturesSection() {
           />
         </svg>
       ),
-      title: 'Secure by Default',
+      title: 'Bank-level security, zero config',
       description:
         'Signature verification, HTTPS only, and automatic secret rotation. Your webhooks are protected at every step.',
       delay: 'delay-600',
@@ -385,6 +424,122 @@ function FeaturesSection() {
   );
 }
 
+// Competitor Comparison Section
+function ComparisonSection() {
+  const [activeTab, setActiveTab] = useState<'ngrok' | 'webhooksite' | 'diy'>(
+    'ngrok'
+  );
+
+  const comparisons = {
+    ngrok: {
+      headline: 'Tired of ngrok URL shuffling?',
+      body: "ngrok is great for tunneling. But for webhooks, you need more. Permanent URLs that never change, full event history with replay, built-in signature verification, and team collaboration—all without the $240/year price tag for a static domain.",
+      bullets: [
+        'Permanent URLs on free tier (vs ngrok\'s $8/mo)',
+        'Full event history with one-click replay',
+        'Built-in Stripe/DocuSign signature verification',
+        'See exactly what payload hit your endpoint',
+      ],
+    },
+    webhooksite: {
+      headline: 'More than just inspecting',
+      body: 'webhook.site shows you what came in. HookOne lets you replay it, route it to localhost, and test with mock events—without leaving your development workflow.',
+      bullets: [
+        'Forward webhooks to localhost with CLI',
+        'Replay any event to test your code',
+        'Mock workflows for Stripe, DocuSign, Dodo',
+        'Team collaboration and sharing',
+      ],
+    },
+    diy: {
+      headline: 'Stop building webhook infrastructure',
+      body: "You're building a product, not a webhook management system. Get logging, replay, verification, and routing out of the box—so you can focus on what matters.",
+      bullets: [
+        'Event logging with full payload capture',
+        'One-click replay for debugging',
+        'Signature verification for all major platforms',
+        'Localhost relay without network config',
+      ],
+    },
+  };
+
+  const current = comparisons[activeTab];
+
+  return (
+    <section className="py-28 px-6 border-y border-border/30">
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            Why developers switch to HookOne
+          </h2>
+          <p className="text-muted">
+            See how HookOne compares to what you&apos;re using today.
+          </p>
+        </div>
+
+        {/* Tabs */}
+        <div className="flex justify-center gap-2 mb-10">
+          {[
+            { key: 'ngrok', label: 'vs ngrok' },
+            { key: 'webhooksite', label: 'vs webhook.site' },
+            { key: 'diy', label: 'vs DIY' },
+          ].map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() =>
+                setActiveTab(tab.key as 'ngrok' | 'webhooksite' | 'diy')
+              }
+              className={cn(
+                'px-5 py-2.5 rounded-xl text-sm font-medium transition-all',
+                activeTab === tab.key
+                  ? 'bg-accent text-background'
+                  : 'bg-surface-elevated border border-border text-muted hover:text-foreground hover:border-accent/30'
+              )}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Content */}
+        <Card
+          variant="gradient"
+          className="p-8"
+        >
+          <h3 className="text-xl font-bold mb-4">{current.headline}</h3>
+          <p className="text-muted leading-relaxed mb-6">{current.body}</p>
+
+          <div className="grid sm:grid-cols-2 gap-3">
+            {current.bullets.map((bullet, i) => (
+              <div
+                key={i}
+                className="flex items-start gap-3"
+              >
+                <div className="w-5 h-5 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <svg
+                    className="w-3 h-3 text-accent"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={3}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                </div>
+                <span className="text-sm text-foreground">{bullet}</span>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
+    </section>
+  );
+}
+
 // Dashboard Preview Section
 function DashboardSection() {
   const [dashboardView, setDashboardView] = useState<'events' | 'workflows'>(
@@ -394,25 +549,29 @@ function DashboardSection() {
 
   const events = [
     {
-      event: 'payment_intent.succeeded',
+      event: { cliResponse: { status: 200 } } as any,
+      name: 'payment_intent.succeeded',
       platform: 'stripe' as const,
       time: '2s ago',
       status: 'success' as const,
     },
     {
-      event: 'envelope-completed',
+      event: { cliResponse: { status: 200 } } as any,
+      name: 'envelope-completed',
       platform: 'docusign' as const,
       time: '1m ago',
       status: 'success' as const,
     },
     {
-      event: 'payment.succeeded',
+      event: { cliResponse: { status: 200 } } as any,
+      name: 'payment.succeeded',
       platform: 'dodo' as const,
       time: '5m ago',
       status: 'success' as const,
     },
     {
-      event: 'payment_intent.payment_failed',
+      event: { cliResponse: { status: 500 } } as any,
+      name: 'payment_intent.payment_failed',
       platform: 'stripe' as const,
       time: '1h ago',
       status: 'error' as const,
@@ -991,6 +1150,98 @@ function PricingSection() {
   );
 }
 
+// FAQ Section
+function FAQSection() {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  const faqs = [
+    {
+      question: 'How is HookOne different from ngrok?',
+      answer:
+        "ngrok is a general-purpose tunneling tool—great for exposing localhost, but webhooks are an afterthought. HookOne is built specifically for webhooks: permanent URLs that never change, full event history with replay, built-in signature verification, and platform-aware parsing for Stripe, DocuSign, and more. Plus, you get a permanent URL on the free tier—no $240/year for a static domain.",
+    },
+    {
+      question: 'Can I use HookOne for free?',
+      answer:
+        'Yes! The free tier includes 1 permanent webhook URL, 1,000 events/month, 7-day event history, CLI localhost relay, and 3 mock workflows. Perfect for side projects and learning.',
+    },
+    {
+      question: 'Does my webhook URL ever expire?',
+      answer:
+        'Never. Your HookOne webhook URL is permanent. Set it once in Stripe, DocuSign, or any platform, and never update it again—even if you restart your computer, switch networks, or take a vacation.',
+    },
+    {
+      question: 'How do I test Stripe webhooks locally?',
+      answer:
+        'Run `hookone 3000 [your-webhook-id]` in your terminal. Any webhook that hits your HookOne URL will be forwarded to localhost:3000 instantly. No ngrok sessions, no URL updates, no configuration.',
+    },
+    {
+      question: 'Can multiple team members use the same webhook?',
+      answer:
+        'Yes! On the Pro plan, you can invite team members to collaborate on webhooks. Everyone sees the same event history and can replay events independently.',
+    },
+    {
+      question: 'Is HookOne secure for production webhooks?',
+      answer:
+        'Absolutely. We support HTTPS only, built-in signature verification for Stripe/DocuSign/Dodo, and automatic secret rotation. Your webhook data is encrypted in transit and at rest.',
+    },
+  ];
+
+  return (
+    <section className="py-28 px-6">
+      <div className="max-w-3xl mx-auto">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            Frequently asked questions
+          </h2>
+          <p className="text-muted">
+            Everything you need to know about HookOne.
+          </p>
+        </div>
+
+        <div className="space-y-3">
+          {faqs.map((faq, i) => (
+            <div
+              key={i}
+              className="border border-border rounded-xl overflow-hidden"
+            >
+              <button
+                onClick={() => setOpenIndex(openIndex === i ? null : i)}
+                className="w-full flex items-center justify-between p-5 text-left hover:bg-surface-elevated/50 transition-colors"
+              >
+                <span className="font-medium text-sm pr-4">{faq.question}</span>
+                <svg
+                  className={cn(
+                    'w-5 h-5 text-muted flex-shrink-0 transition-transform',
+                    openIndex === i && 'rotate-180'
+                  )}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
+              {openIndex === i && (
+                <div className="px-5 pb-5">
+                  <p className="text-sm text-muted leading-relaxed">
+                    {faq.answer}
+                  </p>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // CTA Section
 function CTASection() {
   const { data: session } = useSession();
@@ -1002,10 +1253,10 @@ function CTASection() {
     >
       <div className="max-w-3xl mx-auto text-center">
         <h2 className="text-3xl md:text-4xl font-bold mb-6">
-          Ready to simplify your webhook testing?
+          Ready to stop updating webhook URLs?
         </h2>
         <p className="text-muted mb-10 text-lg">
-          Get started today. No credit card required.
+          Get your permanent URL today. No credit card required.
         </p>
         {session?.user ? (
           <Link href="/dashboard">
@@ -1016,7 +1267,7 @@ function CTASection() {
             size="lg"
             onClick={() => signIn('google')}
           >
-            Get started for free
+            Get your permanent URL
           </Button>
         )}
       </div>
@@ -1082,11 +1333,14 @@ export default function Home() {
     <div className="min-h-screen bg-background grid-bg mesh-gradient">
       <Navigation />
       <HeroSection />
+      <ProblemSection />
       <PlatformsSection />
       <FeaturesSection />
+      <ComparisonSection />
       <DashboardSection />
       <MockWorkflowsSection />
       <PricingSection />
+      <FAQSection />
       <CTASection />
       <Footer />
     </div>

@@ -2,7 +2,6 @@ import { Types } from 'mongoose';
 import Event from '../models/Event';
 import { IWebhook } from '../models/Webhook';
 import { getHandler } from '../platforms';
-import { Platform, UnifiedEvent } from '../types/unified-events';
 import { dispatchToDestinations } from './destinationService';
 
 interface ProcessWebhookParams {
@@ -55,27 +54,27 @@ export async function processWebhookAsync(
   }
 
   // Build unified payload structure (same shape for ALL webhook types)
-  const unifiedPayload: UnifiedEvent = {
-    metadata: {
-      webhook_id: webhook.uniqueId,
-      platform: webhook.type as Platform,
-      event_type: eventType,
-      original_event_type: originalEventType,
-      received_at: new Date().toISOString(),
-      method,
-      query_params: queryParams,
-      verified,
-    },
-    data: normalizedData,
-    original_payload: payload,
-  };
+  // const unifiedPayload: UnifiedEvent = {
+  //   metadata: {
+  //     webhook_id: webhook.uniqueId,
+  //     platform: webhook.type as Platform,
+  //     event_type: eventType,
+  //     original_event_type: originalEventType,
+  //     received_at: new Date().toISOString(),
+  //     method,
+  //     query_params: queryParams,
+  //     verified,
+  //   },
+  //   data: normalizedData,
+  //   original_payload: payload,
+  // };
 
   // Update event with verification and transformation results
   await Event.findByIdAndUpdate(eventId, {
-    name: eventType || originalEventType || '',
+    name: originalEventType || '',
     verified,
     verificationError,
-    normalizedPayload: unifiedPayload,
+    // normalizedPayload: unifiedPayload,
   });
 
   // Dispatch unified payload to destinations (both simultaneously)
@@ -85,7 +84,8 @@ export async function processWebhookAsync(
     webhook,
     method,
     headers,
-    payload: unifiedPayload, // Same unified structure for all types
+    // payload: unifiedPayload, // Same unified structure for all types
+    payload,
     queryParams,
   });
 }

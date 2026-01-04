@@ -97,28 +97,29 @@ export function EventDetailPanel({
                     >
                       Status: {getStatusCode(event)}
                     </span>
-                    {event.verified !== undefined && (
-                      <span
-                        className={cn(
-                          'flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full',
-                          event.verified
-                            ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-400 dark:border-emerald-400/50'
-                            : 'bg-red-500/10 text-red-600 dark:text-red-400 border border-red-400 dark:border-red-400/50'
-                        )}
-                      >
-                        {event.verified ? (
-                          <>
-                            <CheckCircle2 className="size-3.5" />
-                            Verified
-                          </>
-                        ) : (
-                          <>
-                            <XCircle className="size-3.5" />
-                            Unverified
-                          </>
-                        )}
-                      </span>
-                    )}
+                    {event.verified !== undefined &&
+                      event.platform !== 'custom' && (
+                        <span
+                          className={cn(
+                            'flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full',
+                            event.verified
+                              ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-400 dark:border-emerald-400/50'
+                              : 'bg-red-500/10 text-red-600 dark:text-red-400 border border-red-400 dark:border-red-400/50'
+                          )}
+                        >
+                          {event.verified ? (
+                            <>
+                              <CheckCircle2 className="size-3.5" />
+                              Verified
+                            </>
+                          ) : (
+                            <>
+                              <XCircle className="size-3.5" />
+                              Unverified
+                            </>
+                          )}
+                        </span>
+                      )}
                     {event.overQuota && (
                       <span className="flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400">
                         <AlertTriangle className="size-3.5" />
@@ -163,7 +164,7 @@ export function EventDetailPanel({
               {view === 'request' ? (
                 <>
                   {/* Normalized Payload (Collapsible) */}
-                  {hasContent(event.normalizedPayload) && (
+                  {/* {hasContent(event.normalizedPayload) && (
                     <CollapsibleSection
                       title="Payload"
                       defaultOpen
@@ -177,11 +178,14 @@ export function EventDetailPanel({
                         ></JsonView>
                       </div>
                     </CollapsibleSection>
-                  )}
+                  )} */}
 
                   {/* Original Payload */}
                   {hasContent(event.payload) && (
-                    <CollapsibleSection title="Original Payload">
+                    <CollapsibleSection
+                      title="Payload"
+                      defaultOpen
+                    >
                       <div className="max-h-100 overflow-auto p-4">
                         <JsonView
                           value={event.payload as any}

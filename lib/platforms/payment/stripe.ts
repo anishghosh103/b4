@@ -83,5 +83,8 @@ function normalizeStripeData(payload: any): NormalizedSubscriptionData {
     amount: obj?.items?.data?.[0]?.price?.unit_amount,
     currency: obj?.currency,
     status: obj?.status,
+    current_period_start: obj?.items?.data?.[0]?.current_period_start,
+    current_period_end: obj?.items?.data?.[0]?.current_period_end,
+    interval: obj?.items?.data?.[0]?.price?.recurring?.interval,
   };
 }

@@ -13,7 +13,8 @@ export interface StripeMockContext {
 
 // Generate a random ID with a prefix
 function generateId(prefix: string, length: number = 24): string {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const chars =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let result = '';
   for (let i = 0; i < length; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -80,8 +81,6 @@ export function generateCustomerSubscriptionCreated(
         collection_method: 'charge_automatically',
         created,
         currency: 'usd',
-        current_period_end: periodEnd,
-        current_period_start: created,
         customer: ctx.customerId,
         days_until_due: null,
         default_payment_method: ctx.paymentMethodId,
@@ -100,6 +99,8 @@ export function generateCustomerSubscriptionCreated(
               object: 'subscription_item',
               billing_thresholds: null,
               created,
+              current_period_end: periodEnd,
+              current_period_start: created,
               discounts: [],
               metadata: {},
               plan: {
@@ -201,7 +202,9 @@ export function generateCustomerSubscriptionCreated(
         test_clock: null,
         transfer_data: null,
         trial_end: null,
-        trial_settings: { end_behavior: { missing_payment_method: 'create_invoice' } },
+        trial_settings: {
+          end_behavior: { missing_payment_method: 'create_invoice' },
+        },
         trial_start: null,
       },
     },
@@ -264,8 +267,14 @@ export function generateInvoicePaid(ctx: StripeMockContext): StripeEvent {
         ending_balance: 0,
         footer: null,
         from_invoice: null,
-        hosted_invoice_url: `https://invoice.stripe.com/i/${generateId('inv', 24)}`,
-        invoice_pdf: `https://pay.stripe.com/invoice/${generateId('inv', 24)}/pdf`,
+        hosted_invoice_url: `https://invoice.stripe.com/i/${generateId(
+          'inv',
+          24
+        )}`,
+        invoice_pdf: `https://pay.stripe.com/invoice/${generateId(
+          'inv',
+          24
+        )}/pdf`,
         issuer: { type: 'self' },
         last_finalization_error: null,
         latest_revision: null,

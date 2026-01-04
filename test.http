@@ -1,4 +1,4 @@
-POST https://localhost:1978/wh/c9499fa8
+POST http://localhost:1978/wh/c9499fa8
 Authorization: Bearer 123456
 Content-Type: application/json
 

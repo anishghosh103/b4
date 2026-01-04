@@ -1,9 +1,10 @@
 import { auth } from '@/lib/auth';
-import { redirect, notFound } from 'next/navigation';
-import dbConnect from '@/lib/mongodb';
 import Webhook, { IWebhook } from '@/lib/models/Webhook';
-import { SettingsClient } from './settings-client';
+import dbConnect from '@/lib/mongodb';
+import { getUserTier } from '@/lib/services/subscriptionService';
 import { Types } from 'mongoose';
+import { notFound, redirect } from 'next/navigation';
+import { SettingsClient } from './settings-client';
 
 interface WebhookSettingsPageProps {
   params: Promise<{ id: string }>;
@@ -22,10 +23,13 @@ export default async function WebhookSettingsPage({
 
   await dbConnect();
 
-  const webhook = await Webhook.findOne({
-    uniqueId: id,
-    userId: session.user.id,
-  }).lean<IWebhook & { _id: Types.ObjectId }>();
+  const [webhook, pricingTier] = await Promise.all([
+    Webhook.findOne({
+      uniqueId: id,
+      userId: session.user.id,
+    }).lean<IWebhook & { _id: Types.ObjectId }>(),
+    getUserTier(session.user.id),
+  ]);
 
   if (!webhook) {
     notFound();
@@ -39,6 +43,7 @@ export default async function WebhookSettingsPage({
       initialType={webhook.type || 'custom'}
       initialDestinationUrl={webhook.destinationUrl || ''}
       initialCliEnabled={webhook.cliEnabled ?? true}
+      tier={pricingTier}
     />
   );
 }

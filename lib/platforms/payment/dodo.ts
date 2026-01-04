@@ -1,3 +1,4 @@
+import { NormalizedSubscriptionData } from '@/lib/types/unified-events';
 import { Webhook } from 'standardwebhooks';
 import { PlatformHandler, TransformResult, VerificationResult } from '../types';
 import { DODO_EVENT_MAPPINGS } from './mappings';
@@ -28,12 +29,29 @@ export const dodoHandler: PlatformHandler = {
   transform(payload: any, headers: Record<string, string>): TransformResult {
     const dodoEventType = payload.event_type || payload.type;
     const unifiedType = DODO_EVENT_MAPPINGS[dodoEventType];
+    const data = normalizeDodoData(payload);
 
     return {
       success: true,
       event_type: unifiedType || dodoEventType,
       original_event_type: dodoEventType,
-      data: payload.data || {},
+      data,
     };
   },
 };
+
+function normalizeDodoData(payload: any): NormalizedSubscriptionData {
+  const obj = payload.data;
+  return {
+    subscription_id: obj?.subscription_id || '',
+    customer_id: obj?.customer?.customer_id,
+    customer_email: obj?.customer?.email,
+    plan_id: obj?.product_id,
+    amount: obj?.recurring_pre_tax_amount,
+    currency: obj?.currency,
+    status: obj?.status,
+    interval: obj?.payment_frequency_interval,
+    current_period_start: obj?.previous_billing_date,
+    current_period_end: obj?.next_billing_date,
+  };
+}
