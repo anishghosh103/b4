@@ -61,12 +61,12 @@ function Navigation() {
           >
             Pricing
           </a>
-          <a
-            href="#"
+          <Link
+            href="/docs"
             className="text-sm text-muted hover:text-foreground transition-colors"
           >
             Docs
-          </a>
+          </Link>
         </div>
 
         <div className="flex items-center gap-2">
@@ -1316,43 +1316,40 @@ function Footer() {
     <footer className="py-12 px-6 border-t border-border/30">
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-          <Logo />
-          <div className="text-sm text-muted">
-            Made by{' '}
-            <a
-              href="https://x.com/anishghosh103"
-              target="_blank"
-              className="text-amber-600 dark:text-amber-500 hover:underline hover:underline-offset-2"
-            >
-              @anishghosh103
-            </a>
+          <div className="flex items-center gap-2">
+            <Logo />
+            <span>&middot;</span>
+            <div className="text-sm text-muted">
+              Made by{' '}
+              <a
+                href="https://x.com/anishghosh103"
+                target="_blank"
+                className="text-amber-600 dark:text-amber-500 hover:underline hover:underline-offset-2"
+              >
+                @anishghosh103
+              </a>
+            </div>
           </div>
-          {/* <div className="flex items-center gap-8 text-sm text-muted">
-            <a
-              href="#"
+          <div className="flex items-center gap-4 sm:gap-6 text-sm text-muted">
+            <Link
+              href="/docs"
               className="hover:text-foreground transition-colors"
             >
               Documentation
-            </a>
-            <a
-              href="#"
+            </Link>
+            <Link
+              href="/terms"
               className="hover:text-foreground transition-colors"
             >
-              GitHub
-            </a>
-            <a
-              href="#"
+              Terms
+            </Link>
+            <Link
+              href="/privacy"
               className="hover:text-foreground transition-colors"
             >
-              Twitter
-            </a>
-            <a
-              href="#"
-              className="hover:text-foreground transition-colors"
-            >
-              Discord
-            </a>
-          </div> */}
+              Privacy Policy
+            </Link>
+          </div>
           <p className="text-sm text-muted">
             &copy; 2025 HookOne. All rights reserved.
           </p>

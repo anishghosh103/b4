@@ -44,6 +44,7 @@ Column 3 (App Logs): Hard to search, No Replay capability.
 
 ## To Do
 
+- fix payment failed
 - make event time (2m ago) increment in realtime
 - restrict cli to just one device / webhook
 - add filter capability
