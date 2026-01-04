@@ -8,5 +8,29 @@ Content-Type: application/json
 
 ####
 
+POST https://hookone.dev/wh/6aadbe90
+Authorization: Bearer 123456
+Content-Type: application/json
+
+{
+  "test": "payload 2"
+}
+
+####
+
 GET http://localhost:1978/wh/c9499fa8
 Authorization: Bearer 123456
+
+####
+
+POST https://server.hookone.dev/forward/6aadbe90
+Authorization: Bearer edAKikZE78aHPvLFTq5TBxtfNK1pEA7d
+Content-Type: application/json
+
+{
+  "eventId": "123",
+  "method": "POST",
+  "headers": {},
+  "body": { "test": "payload" },
+  "queryParams": {}
+}

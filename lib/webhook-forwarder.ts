@@ -25,6 +25,7 @@ export async function forwardWebhookToServer(
   const { webhookId, eventId, method, headers, body, queryParams } = params;
 
   try {
+    console.log(WS_SERVER_URL, WS_AUTH_TOKEN, webhookId);
     const response = await fetch(`${WS_SERVER_URL}/forward/${webhookId}`, {
       method: 'POST',
       headers: {
