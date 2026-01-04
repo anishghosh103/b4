@@ -193,25 +193,29 @@ function PlatformsSection() {
             color="violet"
           />
           <PlatformLogo
-            name="DocuSign"
-            color="yellow"
-          />
-          <PlatformLogo
             name="DodoPayments"
             color="emerald"
           />
           <PlatformLogo
+            name="DocuSign"
+            color="yellow"
+          />
+          <PlatformLogo
+            name="PandaDoc"
+            color="green"
+          />
+          {/* <PlatformLogo
             name="GitHub"
             color="zinc"
-          />
-          <PlatformLogo
+          /> */}
+          {/* <PlatformLogo
             name="Shopify"
             color="lime"
-          />
-          <PlatformLogo
+          /> */}
+          {/* <PlatformLogo
             name="Twilio"
             color="red"
-          />
+          /> */}
         </div>
       </div>
     </section>
@@ -405,12 +409,6 @@ function DashboardSection() {
       event: 'payment.succeeded',
       platform: 'dodo' as const,
       time: '5m ago',
-      status: 'success' as const,
-    },
-    {
-      event: 'pull_request.opened',
-      platform: 'github' as const,
-      time: '12m ago',
       status: 'success' as const,
     },
     {
@@ -778,7 +776,7 @@ function MockWorkflowsSection() {
     { name: 'Stripe', desc: 'Payment intents, subscriptions, invoices' },
     { name: 'DodoPayments', desc: 'Payment events, refunds, disputes' },
     { name: 'DocuSign', desc: 'Envelope status, recipient events' },
-    { name: 'GitHub', desc: 'Push, PR, issue, and deployment events' },
+    // { name: 'GitHub', desc: 'Push, PR, issue, and deployment events' },
   ];
 
   const steps = [

@@ -2,8 +2,8 @@ import Event from '@/lib/models/Event';
 import Webhook, { IWebhook } from '@/lib/models/Webhook';
 import dbConnect from '@/lib/mongodb';
 import { canReceiveEvent } from '@/lib/services/subscriptionService';
-import { detectPlatformAndEvent } from '@/lib/utils/platform-detector';
-import { forwardWebhookToServer } from '@/lib/webhook-forwarder';
+import { processWebhookAsync } from '@/lib/services/webhookProcessor';
+import { asyncHandler } from '@/lib/utils/controllerHelpers';
 import { Types } from 'mongoose';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -17,9 +17,12 @@ async function handleWebhookRequest(
   try {
     const { id } = await params;
 
+    // Read raw body for signature verification
+    const rawBody = await request.text();
+
     await dbConnect();
 
-    // Find webhook by uniqueId
+    // Find webhook with signing secret
     const webhook = await Webhook.findOne({ uniqueId: id }).lean<
       IWebhook & { _id: Types.ObjectId }
     >();
@@ -49,6 +52,19 @@ async function handleWebhookRequest(
     // Track if this event is over quota (in grace period)
     const isOverQuota = eventCheck.status === 'grace_period';
 
+    // Parse payload
+    let payload: any = null;
+    const contentType = request.headers.get('content-type') || '';
+    if (contentType.includes('application/json') && rawBody) {
+      try {
+        payload = JSON.parse(rawBody);
+      } catch {
+        payload = rawBody;
+      }
+    } else {
+      payload = rawBody;
+    }
+
     // Extract headers (convert Headers to plain object)
     const headers: Record<string, string> = {};
     request.headers.forEach((value, key) => {
@@ -61,76 +77,40 @@ async function handleWebhookRequest(
       queryParams[key] = value;
     });
 
-    // Extract payload (body) for methods that support it
-    let payload: any = null;
-    if (method !== 'GET') {
-      const contentType = request.headers.get('content-type') || '';
+    // Detect platform (for logging/display purposes)
 
-      if (contentType.includes('application/json')) {
-        try {
-          payload = await request.json();
-        } catch {
-          payload = null;
-        }
-      } else if (contentType.includes('application/x-www-form-urlencoded')) {
-        try {
-          const formData = await request.formData();
-          payload = Object.fromEntries(formData.entries());
-        } catch {
-          payload = null;
-        }
-      } else if (contentType.includes('text/')) {
-        try {
-          payload = await request.text();
-        } catch {
-          payload = null;
-        }
-      } else {
-        // Try to read as text for other content types
-        try {
-          payload = await request.text();
-        } catch {
-          payload = null;
-        }
-      }
-    }
-
-    // Detect platform and extract event name
-    const { platform, eventName } = detectPlatformAndEvent(headers, payload);
-
-    // Create event record
+    // Create event record immediately
     const event = await Event.create({
       user: webhook.userId,
       webhook: webhook._id,
-      name: eventName || '',
-      platform,
+      platform: webhook.type,
       method,
       payload,
       headers,
       queryParams,
-      responseStatus: 200,
-      responseBody: { received: true },
       overQuota: isOverQuota,
     });
 
-    // Forward to WebSocket server for CLI (fire and forget)
-    forwardWebhookToServer({
-      webhookId: id,
-      method,
-      headers,
-      body: payload,
-      queryParams,
-    }).catch((err) => {
-      console.error('Webhook forwarding failed:', err);
-    });
-
-    return NextResponse.json(
-      {
-        received: true,
-        eventId: event._id,
-      },
+    // IMMEDIATE RESPONSE - Don't wait for processing
+    const response = NextResponse.json(
+      { received: true, eventId: event._id },
       { status: 200 }
     );
+
+    // Async processing (fire-and-forget)
+    processWebhookAsync({
+      webhook,
+      eventId: event._id as Types.ObjectId,
+      method,
+      headers,
+      payload,
+      rawBody,
+      queryParams,
+    }).catch((err) => {
+      console.error('Async webhook processing failed:', err);
+    });
+
+    return response;
   } catch (error) {
     console.error('Error processing webhook:', error);
     return NextResponse.json(
@@ -140,33 +120,29 @@ async function handleWebhookRequest(
   }
 }
 
-export async function GET(
-  request: NextRequest,
-  context: { params: Promise<{ id: string }> }
-) {
-  return handleWebhookRequest(request, context, 'GET');
-}
+export const GET = asyncHandler(
+  (request: NextRequest, context: { params: Promise<{ id: string }> }) => {
+    return handleWebhookRequest(request, context, 'GET');
+  }
+);
 
-export async function POST(
-  request: NextRequest,
-  context: { params: Promise<{ id: string }> }
-) {
-  return handleWebhookRequest(request, context, 'POST');
-}
+export const POST = asyncHandler(
+  (request: NextRequest, context: { params: Promise<{ id: string }> }) => {
+    return handleWebhookRequest(request, context, 'POST');
+  }
+);
 
-export async function PUT(
-  request: NextRequest,
-  context: { params: Promise<{ id: string }> }
-) {
-  return handleWebhookRequest(request, context, 'PUT');
-}
+export const PUT = asyncHandler(
+  (request: NextRequest, context: { params: Promise<{ id: string }> }) => {
+    return handleWebhookRequest(request, context, 'PUT');
+  }
+);
 
-export async function PATCH(
-  request: NextRequest,
-  context: { params: Promise<{ id: string }> }
-) {
-  return handleWebhookRequest(request, context, 'PATCH');
-}
+export const PATCH = asyncHandler(
+  (request: NextRequest, context: { params: Promise<{ id: string }> }) => {
+    return handleWebhookRequest(request, context, 'PATCH');
+  }
+);
 
 export async function DELETE(
   request: NextRequest,

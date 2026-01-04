@@ -1,6 +1,5 @@
 import mongoose, { Document, Schema, Types } from 'mongoose';
-
-export type Platform = 'stripe' | 'github' | 'docusign' | 'dodo' | 'unknown';
+import { Platform } from '../platforms/types';
 
 export interface IEvent extends Document {
   user: Types.ObjectId;
@@ -11,9 +10,18 @@ export interface IEvent extends Document {
   payload: any;
   headers: any;
   queryParams: any;
-  responseStatus: number;
-  responseBody: any;
+  cliResponse: {
+    status: number;
+    body: any;
+  };
+  urlResponse: {
+    status: number;
+    body: any;
+  };
   overQuota: boolean; // True if event was received during grace period
+  verified: boolean;
+  normalizedPayload: any;
+  verificationError: string | null;
   createdAt: Date;
 }
 
@@ -34,8 +42,16 @@ const EventSchema = new Schema<IEvent>(
     },
     platform: {
       type: String,
-      enum: ['stripe', 'github', 'docusign', 'dodo', 'unknown'],
-      default: 'unknown',
+      enum: [
+        'stripe',
+        'docusign',
+        'dodo',
+        'polar',
+        'pandadoc',
+        'documenso',
+        'custom',
+      ],
+      default: 'custom',
     },
     method: {
       type: String,
@@ -44,9 +60,18 @@ const EventSchema = new Schema<IEvent>(
     payload: { type: Schema.Types.Mixed },
     headers: { type: Schema.Types.Mixed },
     queryParams: { type: Schema.Types.Mixed },
-    responseStatus: { type: Number },
-    responseBody: { type: Schema.Types.Mixed },
+    cliResponse: {
+      status: Number,
+      body: Schema.Types.Mixed,
+    },
+    urlResponse: {
+      status: Number,
+      body: Schema.Types.Mixed,
+    },
     overQuota: { type: Boolean, default: false },
+    verified: { type: Boolean, default: false },
+    normalizedPayload: { type: Schema.Types.Mixed, default: null },
+    verificationError: { type: String, default: null },
   },
   { timestamps: true }
 );

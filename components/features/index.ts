@@ -10,3 +10,7 @@ export { WebhookCard } from './webhook-card';
 export { WebhookFormDialog } from './webhook-form-dialog';
 export { DeleteConfirmDialog } from './delete-confirm-dialog';
 export { EmptyState } from './empty-state';
+export { EventDetailPanel } from './event-detail-panel';
+export { JsonViewer } from './json-viewer';
+export { CollapsibleSection } from './collapsible-section';
+export { CopyButton } from './copy-button';

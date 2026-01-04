@@ -6,21 +6,27 @@
 /**
  * Numeric limits for each tier - easily modifiable
  */
-export const TIER_LIMITS = {
+export const TIER_LIMITS: Record<
+  'free' | 'pro',
+  {
+    maxWebhooks: number;
+    maxEventsPerMonth: number;
+    eventRetentionDays: number;
+    maxMockWorkflows: number;
+    eventGracePeriod?: { extraEvents: number; days: number };
+  }
+> = {
   free: {
     maxWebhooks: 1,
     maxEventsPerMonth: 1000,
     eventRetentionDays: 7,
     maxMockWorkflows: 3,
-    // Grace period: accept events over quota for N extra events OR X days
-    eventGracePeriod: { extraEvents: 500, days: 3 },
   },
   pro: {
     maxWebhooks: Infinity,
     maxEventsPerMonth: Infinity,
     eventRetentionDays: 30,
     maxMockWorkflows: Infinity,
-    eventGracePeriod: null, // No grace needed - unlimited
   },
 } as const;
 

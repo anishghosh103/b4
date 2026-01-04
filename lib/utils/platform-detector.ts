@@ -1,4 +1,12 @@
-export type Platform = 'stripe' | 'github' | 'docusign' | 'dodo' | 'unknown';
+export type Platform =
+  | 'stripe'
+  | 'github'
+  | 'docusign'
+  | 'dodo'
+  | 'polar'
+  | 'pandadoc'
+  | 'documenso'
+  | 'custom';
 
 interface DetectionResult {
   platform: Platform;
@@ -8,14 +16,15 @@ interface DetectionResult {
 /**
  * Normalize headers to lowercase keys for consistent detection
  */
-function normalizeHeaders(headers: Record<string, string>): Record<string, string> {
+function normalizeHeaders(
+  headers: Record<string, string>
+): Record<string, string> {
   const normalized: Record<string, string> = {};
   for (const [key, value] of Object.entries(headers)) {
     normalized[key.toLowerCase()] = value;
   }
   return normalized;
 }
-
 
 /**
  * Detect the platform and extract event name from webhook headers and payload
@@ -70,9 +79,33 @@ export function detectPlatformAndEvent(
     };
   }
 
+  // Polar: has webhook-signature but NOT webhook-id
+  if (h['webhook-signature'] && !h['webhook-id']) {
+    return {
+      platform: 'polar',
+      eventName: payload?.type || null,
+    };
+  }
+
+  // PandaDoc: has x-pandadoc-signature header
+  if (h['x-pandadoc-signature']) {
+    return {
+      platform: 'pandadoc',
+      eventName: payload?.event || null,
+    };
+  }
+
+  // Documenso: has x-documenso-signature header
+  if (h['x-documenso-signature']) {
+    return {
+      platform: 'documenso',
+      eventName: payload?.event || payload?.type || null,
+    };
+  }
+
   // Unknown platform: no event name extraction
   return {
-    platform: 'unknown',
+    platform: 'custom',
     eventName: null,
   };
 }

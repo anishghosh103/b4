@@ -1,5 +1,7 @@
 'use client';
 
+import { platformColors, platformLabels } from '@/lib/platforms';
+import { Platform } from '@/lib/platforms/types';
 import { cn } from '@/lib/utils';
 import { useEffect, useState } from 'react';
 
@@ -107,45 +109,41 @@ export function EventStream() {
 }
 
 // Dashboard event list item (non-animated version for dashboard)
-type Platform = 'stripe' | 'github' | 'docusign' | 'dodo' | 'unknown';
-
 interface DashboardEventProps {
   event: string;
   platform: Platform;
   time: string;
   status: 'success' | 'error';
+  onClick?: () => void;
 }
-
-const platformColors: Record<Platform, string> = {
-  stripe: 'bg-violet-500/10 text-violet-600 border-violet-500/20',
-  github: 'bg-zinc-500/10 text-zinc-600 border-zinc-500/20',
-  docusign: 'bg-yellow-500/10 text-yellow-600 border-yellow-500/20',
-  dodo: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
-  unknown: 'bg-zinc-500/10 text-zinc-500 border-zinc-500/20',
-};
-
-const platformLabels: Record<Platform, string> = {
-  stripe: 'Stripe',
-  github: 'GitHub',
-  docusign: 'DocuSign',
-  dodo: 'Dodo',
-  unknown: 'Unknown',
-};
 
 export function DashboardEvent({
   event,
   platform,
   time,
   status,
+  onClick,
 }: DashboardEventProps) {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onClick?.();
+    }
+  };
+
   return (
     <div
       className={cn(
         'group flex items-center gap-4 px-4 py-3.5 rounded-xl',
         'bg-surface-elevated/50 border border-border',
-        'hover:bg-surface-elevated hover:border-accent/20',
-        'transition-all duration-200 cursor-pointer'
+        'hover:bg-surface-elevated hover:border-muted/30 dark:hover:border-accent/50',
+        'transition-all duration-200 cursor-pointer',
+        'focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50'
       )}
+      onClick={onClick}
+      onKeyDown={handleKeyDown}
+      role="button"
+      tabIndex={0}
     >
       {/* Status dot */}
       <div
@@ -163,7 +161,8 @@ export function DashboardEvent({
       {/* Platform badge */}
       <span
         className={cn(
-          'text-xs font-medium px-2.5 py-1 rounded-md border',
+          'text-xs font-medium px-2 py-1 rounded-md',
+          'bg-(--platform-background)/10 text-(--platform-foreground) border border-(--platform-border)/20',
           platformColors[platform]
         )}
       >

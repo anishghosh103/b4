@@ -1,7 +1,12 @@
-POST http://localhost:1978/wh/a9a34cc8
+POST https://localhost:1978/wh/c9499fa8
 Authorization: Bearer 123456
 Content-Type: application/json
 
 {
   "test": "payload"
 }
+
+####
+
+GET http://localhost:1978/wh/c9499fa8
+Authorization: Bearer 123456

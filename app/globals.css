@@ -148,6 +148,7 @@ html {
 
 body {
   font-family: var(--font-sans), system-ui, sans-serif;
+  overflow-y: scroll;
 }
 
 /* Modern Grid background */

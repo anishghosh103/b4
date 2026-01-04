@@ -4,7 +4,15 @@ import { cn } from '@/lib/utils';
 
 interface PlatformLogoProps {
   name: string;
-  color: 'violet' | 'yellow' | 'emerald' | 'zinc' | 'lime' | 'red' | 'blue';
+  color:
+    | 'violet'
+    | 'yellow'
+    | 'emerald'
+    | 'zinc'
+    | 'lime'
+    | 'red'
+    | 'blue'
+    | 'green';
   className?: string;
 }
 
@@ -43,6 +51,11 @@ const colorMap = {
     dot: 'bg-blue-500',
     border: 'hover:border-blue-500/50',
     glow: 'hover:shadow-blue-500/10',
+  },
+  green: {
+    dot: 'bg-green-500',
+    border: 'hover:border-green-500/50',
+    glow: 'hover:shadow-green-500/10',
   },
 };
 

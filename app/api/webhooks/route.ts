@@ -34,10 +34,45 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { name } = await request.json();
+    const {
+      name,
+      type = 'custom',
+      destinationUrl,
+      cliEnabled = true,
+      signingSecret,
+    } = await request.json();
 
     if (!name?.trim()) {
       return NextResponse.json({ error: 'Name is required' }, { status: 400 });
+    }
+
+    // Validate type
+    const validTypes = [
+      'custom',
+      'stripe',
+      'dodo',
+      'polar',
+      'pandadoc',
+      'docusign',
+      'documenso',
+    ];
+    if (!validTypes.includes(type)) {
+      return NextResponse.json(
+        { error: 'Invalid webhook type' },
+        { status: 400 }
+      );
+    }
+
+    // Validate destination URL if provided
+    if (destinationUrl) {
+      try {
+        new URL(destinationUrl);
+      } catch {
+        return NextResponse.json(
+          { error: 'Invalid destination URL' },
+          { status: 400 }
+        );
+      }
     }
 
     await dbConnect();
@@ -73,6 +108,10 @@ export async function POST(request: NextRequest) {
       uniqueId,
       path: `/wh/${uniqueId}`,
       userId: session.user.id,
+      type,
+      destinationUrl: destinationUrl || null,
+      cliEnabled,
+      signingSecret: signingSecret || null,
     });
 
     return NextResponse.json(webhook, { status: 201 });

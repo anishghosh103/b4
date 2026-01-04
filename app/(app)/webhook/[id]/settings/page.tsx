@@ -36,6 +36,9 @@ export default async function WebhookSettingsPage({
       webhookId={webhook._id.toString()}
       uniqueId={webhook.uniqueId}
       initialName={webhook.name}
+      initialType={webhook.type || 'custom'}
+      initialDestinationUrl={webhook.destinationUrl || ''}
+      initialCliEnabled={webhook.cliEnabled ?? true}
     />
   );
 }

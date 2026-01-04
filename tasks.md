@@ -4,9 +4,9 @@
   - destination could be the user's webhook or cli
   - cli is just for local testing and has a daily/hourly limit
 - predefined workflows
-  - user create a project
+  - user create a webhook
   - they can add a production webhook url where we will be relaying the requests or they could test using cli
-  - they setup a webhook
+  - the webhook can be:
     - either vanilla, whatever comes is passed as it is
     - or platform specific
       - payment platforms - stripe or dodopayments or polar
@@ -41,3 +41,9 @@ Column 1 (HookOne): Replay History, Edit Payloads, Filter by JSON Content, Persi
 Column 2 (CLI Tunnels): Ephemeral URLs, No History, Cant Edit/Replay.
 
 Column 3 (App Logs): Hard to search, No Replay capability.
+
+## To Do
+
+- restrict cli to just one device / webhook
+- add filter capability
+- create an all events page

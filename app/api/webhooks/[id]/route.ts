@@ -15,17 +15,63 @@ export async function PUT(
     }
 
     const { id } = await params;
-    const { name } = await request.json();
-
-    if (!name?.trim()) {
-      return NextResponse.json({ error: 'Name is required' }, { status: 400 });
-    }
+    const { name, type, destinationUrl, cliEnabled, signingSecret } =
+      await request.json();
 
     await dbConnect();
 
+    const updateData: Record<string, any> = {};
+
+    if (name !== undefined) {
+      if (!name.trim()) {
+        return NextResponse.json(
+          { error: 'Name cannot be empty' },
+          { status: 400 }
+        );
+      }
+      updateData.name = name.trim();
+    }
+
+    if (type !== undefined) {
+      const validTypes = [
+        'custom',
+        'stripe',
+        'dodo',
+        'polar',
+        'pandadoc',
+        'docusign',
+        'documenso',
+      ];
+      if (!validTypes.includes(type)) {
+        return NextResponse.json(
+          { error: 'Invalid webhook type' },
+          { status: 400 }
+        );
+      }
+      updateData.type = type;
+    }
+
+    if (destinationUrl !== undefined) {
+      if (destinationUrl && !/^https?:\/\//.test(destinationUrl)) {
+        return NextResponse.json(
+          { error: 'Invalid destination URL' },
+          { status: 400 }
+        );
+      }
+      updateData.destinationUrl = destinationUrl || null;
+    }
+
+    if (cliEnabled !== undefined) {
+      updateData.cliEnabled = Boolean(cliEnabled);
+    }
+
+    if (signingSecret !== undefined) {
+      updateData.signingSecret = signingSecret || null;
+    }
+
     const webhook = await Webhook.findOneAndUpdate(
       { _id: id, userId: session.user.id },
-      { name: name.trim() },
+      updateData,
       { new: true }
     );
 

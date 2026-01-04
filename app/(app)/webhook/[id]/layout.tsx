@@ -4,12 +4,14 @@ import { ThemeSwitcher } from '@/components/theme-switcher';
 import { auth } from '@/lib/auth';
 import Webhook, { IWebhook } from '@/lib/models/Webhook';
 import dbConnect from '@/lib/mongodb';
-import { CheckCircle2 } from 'lucide-react';
+import { platformColors, platformLabels } from '@/lib/platforms';
+import { cn } from '@/lib/utils';
 import { Types } from 'mongoose';
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { ReactNode } from 'react';
 import { WebhookNav } from './webhook-nav';
+import { WebhookUrl } from './webhook-url';
 
 interface WebhookLayoutProps {
   children: ReactNode;
@@ -38,8 +40,6 @@ export default async function WebhookLayout({
     notFound();
   }
 
-  const webhookUrl = `hookone.dev/wh/${webhook.uniqueId}`;
-
   return (
     <>
       <AppHeader
@@ -49,23 +49,24 @@ export default async function WebhookLayout({
               <Logo />
             </Link>
             <div className="h-6 w-px bg-border" />
-            <span className="font-medium text-foreground">{webhook.name}</span>
+            <span className="text-sm text-muted font-medium">
+              {webhook.name}
+            </span>
+            <span
+              className={cn(
+                'text-xs py-1 px-2 rounded-md font-medium',
+                'bg-(--platform-background)/10 dark:bg-(--platform-background)/25 text-(--platform-foreground)',
+                platformColors[webhook.type]
+              )}
+            >
+              {platformLabels[webhook.type]}
+            </span>
           </div>
         }
         right={
           <>
             {/* URL Badge with success indicator */}
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
-              <div className="relative">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-                <div className="absolute inset-0 animate-ping">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 opacity-30" />
-                </div>
-              </div>
-              <code className="text-xs font-mono text-emerald-600 dark:text-emerald-400">
-                {webhookUrl}
-              </code>
-            </div>
+            <WebhookUrl uniqueId={webhook.uniqueId} />
             <ThemeSwitcher />
             <UserMenu />
           </>

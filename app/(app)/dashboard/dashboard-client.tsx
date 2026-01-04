@@ -25,34 +25,57 @@ export function DashboardClient({ initialWebhooks }: DashboardClientProps) {
     null
   );
 
-  const handleCreate = async (name: string) => {
+  const handleCreate = async (data: {
+    name: string;
+    type: string;
+    destinationUrl: string;
+    cliEnabled: boolean;
+    signingSecret: string;
+  }) => {
     const response = await fetch('/api/webhooks', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name }),
+      body: JSON.stringify(data),
     });
 
     if (!response.ok) {
-      const data = await response.json();
-      throw new Error(data.error || 'Failed to create webhook');
+      const result = await response.json();
+      throw new Error(result.error || 'Failed to create webhook');
     }
 
     const newWebhook = await response.json();
     setWebhooks((prev) => [newWebhook, ...prev]);
   };
 
-  const handleEdit = async (name: string) => {
+  const handleEdit = async (data: {
+    name: string;
+    type: string;
+    destinationUrl: string;
+    cliEnabled: boolean;
+    signingSecret: string;
+  }) => {
     if (!editingWebhook) return;
+
+    // Only send signingSecret if it was changed
+    const payload: Record<string, any> = {
+      name: data.name,
+      type: data.type,
+      destinationUrl: data.destinationUrl || null,
+      cliEnabled: data.cliEnabled,
+    };
+    if (data.signingSecret) {
+      payload.signingSecret = data.signingSecret;
+    }
 
     const response = await fetch(`/api/webhooks/${editingWebhook._id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name }),
+      body: JSON.stringify(payload),
     });
 
     if (!response.ok) {
-      const data = await response.json();
-      throw new Error(data.error || 'Failed to update webhook');
+      const result = await response.json();
+      throw new Error(result.error || 'Failed to update webhook');
     }
 
     const updatedWebhook = await response.json();

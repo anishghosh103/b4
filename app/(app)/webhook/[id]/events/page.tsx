@@ -1,10 +1,10 @@
 import { auth } from '@/lib/auth';
-import { redirect, notFound } from 'next/navigation';
-import dbConnect from '@/lib/mongodb';
-import Webhook, { IWebhook } from '@/lib/models/Webhook';
 import Event from '@/lib/models/Event';
-import { EventsClient } from './events-client';
+import Webhook, { IWebhook } from '@/lib/models/Webhook';
+import dbConnect from '@/lib/mongodb';
 import { Types } from 'mongoose';
+import { notFound, redirect } from 'next/navigation';
+import { EventsClient } from './events-client';
 
 interface WebhookEventsPageProps {
   params: Promise<{ id: string }>;
