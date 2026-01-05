@@ -21,7 +21,11 @@ const mono = Space_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Permanent Webhook URLs for Developers | HookOne - ngrok Alternative',
+  metadataBase: new URL('https://hookone.dev'),
+  title: {
+    default: 'Permanent Webhook URLs for Developers | HookOne - ngrok Alternative',
+    template: '%s | HookOne',
+  },
   description:
     'Get a permanent webhook URL that never changes. Test Stripe, DocuSign, and payment webhooks locally. Inspect payloads, replay events, and relay to localhost. Free to start.',
   keywords: [
@@ -32,19 +36,42 @@ export const metadata: Metadata = {
     'webhook localhost relay',
     'replay webhook events',
     'webhook testing tool',
+    'stripe webhook testing',
+    'docusign webhook',
+    'webhook localhost',
   ],
+  authors: [{ name: 'HookOne' }],
+  creator: 'HookOne',
+  publisher: 'HookOne',
+  alternates: {
+    canonical: '/',
+  },
   openGraph: {
     title: 'Permanent Webhook URLs for Developers | HookOne',
     description:
       'Get a permanent webhook URL that never changes. Test Stripe, DocuSign, and payment webhooks locally. Free to start.',
     type: 'website',
     siteName: 'HookOne',
+    url: 'https://hookone.dev',
+    locale: 'en_US',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Permanent Webhook URLs for Developers | HookOne',
     description:
       'Get a permanent webhook URL that never changes. Test Stripe, DocuSign, and payment webhooks locally. Free to start.',
+    creator: '@hookone',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
 };
 
