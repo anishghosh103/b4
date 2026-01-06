@@ -71,6 +71,14 @@ async function handleWebhookRequest(
     // Extract headers (convert Headers to plain object)
     const headers: Record<string, string> = {};
     request.headers.forEach((value, key) => {
+      if (
+        key.startsWith('x-vercel-') ||
+        key.startsWith('cf-') ||
+        key.startsWith('x-forwarded') ||
+        key.startsWith('x-real-ip') ||
+        key.startsWith('x-matched-path')
+      )
+        return;
       headers[key] = value;
     });
 
